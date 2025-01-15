@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'screens/home-screen.dart';
+import 'package:legocontroller/screens/home-screen.dart';
 
 void main() {
   runApp(const MyApp());
