@@ -31,55 +31,28 @@ class _ScanTabState extends State<ScanTab> {
             ],
           ),
         ),
-        child: Column(
-          children: [
-            _buildScanButton(),
-            Expanded(
-              child: _devices.isEmpty
-                  ? _buildEmptyState()
-                  : _buildDeviceList(),
-            ),
-          ],
-        ),
+        child: _devices.isEmpty
+            ? _buildEmptyState()
+            : _buildDeviceList(),
       ),
-    );
-  }
-
-  Widget _buildScanButton() {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: SizedBox(
-              height: 56,
-              child: ElevatedButton.icon(
-                onPressed: _isScanning || !_legoService.canConnectMore
-                    ? null
-                    : _startScan,
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                ),
-                icon: _isScanning
-                    ? SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
-                )
-                    : const Icon(Icons.search, size: 28),
-                label: Text(
-                  _isScanning ? 'Scanning...' : 'Scan for Trains',
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ),
-            ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _isScanning || !_legoService.canConnectMore
+            ? null
+            : _startScan,
+        icon: _isScanning
+            ? SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
-        ],
+        )
+            : const Icon(Icons.bluetooth_searching),
+        label: Text(_isScanning ? 'Scanning...' : 'Scan'),
+        backgroundColor: _isScanning || !_legoService.canConnectMore
+            ? Theme.of(context).disabledColor
+            : Theme.of(context).primaryColor,
       ),
     );
   }
