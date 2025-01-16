@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:legocontroller/style/app_style.dart';
 import 'package:universal_ble/universal_ble.dart';
 import '../services/lego-service.dart';
+import '../widgets/buttons.dart';
 
 class ScanTab extends StatefulWidget {
   const ScanTab({super.key});
@@ -136,18 +138,12 @@ class _ScanTabState extends State<ScanTab> {
               ],
             ),
             trailing: SizedBox(
-              width: 100,
-              child: ElevatedButton(
-                onPressed: !_legoService.canConnectMore
+              child: ControlButton(
+                icon: Icons.add,
+                onPressed:  !_legoService.canConnectMore
                     ? null
                     : () => _connectToDevice(device),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: const Text('Connect'),
+                color: AppStyle.accentColor,
               ),
             ),
           ),

@@ -69,13 +69,16 @@ class LegoService {
 
   Future<List<BleDevice>> scanForDevices() async {
     List<BleDevice> devices = [];
+    final Set<String> seenDeviceIds = {};  // Track unique devices
 
     try {
       // Set up scan result handler
       UniversalBle.onScanResult = (BleDevice device) {
         if (device.name?.contains('HUB') ?? false) {
-          // Don't add already connected devices
-          if (!_connectedHubs.containsKey(device.deviceId)) {
+          // Don't add already connected devices or duplicates
+          if (!_connectedHubs.containsKey(device.deviceId) &&
+              !seenDeviceIds.contains(device.deviceId)) {
+            seenDeviceIds.add(device.deviceId);
             devices.add(device);
           }
         }
@@ -87,11 +90,13 @@ class LegoService {
         ),
       );
 
-      await Future.delayed(const Duration(seconds: 4));
+      // Scan for 10 seconds
+      await Future.delayed(const Duration(seconds: 10));
       await UniversalBle.stopScan();
 
     } catch (e) {
       print('Scan error: $e');
+      rethrow;  // Rethrow to handle in UI
     }
 
     return devices;

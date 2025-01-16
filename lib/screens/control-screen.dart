@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import '../services/lego-service.dart';
 import '../utils/constants.dart';
+import '../widgets/buttons.dart';
 
 class ControlScreen extends StatefulWidget {
   const ControlScreen({super.key});
@@ -164,7 +165,7 @@ class _ControlScreenState extends State<ControlScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _SpeedButton(
+                SpeedButton(
                   icon: Icons.remove,
                   onPressed: speed > -100
                       ? () => _updateTrainSpeed(hub.device.deviceId, max(speed - 10, -100))
@@ -190,7 +191,7 @@ class _ControlScreenState extends State<ControlScreen> {
                     ),
                   ),
                 ),
-                _SpeedButton(
+                SpeedButton(
                   icon: Icons.add,
                   onPressed: speed < 100
                       ? () => _updateTrainSpeed(hub.device.deviceId, min(speed + 10, 100))
@@ -205,21 +206,21 @@ class _ControlScreenState extends State<ControlScreen> {
             Row(
               children: [
                 Expanded(
-                  child: _ControlButton(
+                  child: ControlButton(
                     icon: Icons.arrow_back_ios,
                     onPressed: () => _updateTrainSpeed(hub.device.deviceId, -50),
                     color: speed < 0 ? Colors.yellow : Colors.grey.shade300,
                   ),
                 ),
                 const SizedBox(width: 8),
-                _ControlButton(
+                ControlButton(
                   icon: Icons.stop,
                   onPressed: isMoving ? () => _updateTrainSpeed(hub.device.deviceId, 0) : null,
                   color: speed != 0 ? Colors.red : Colors.grey.shade300,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: _ControlButton(
+                  child: ControlButton(
                     icon: Icons.arrow_forward_ios,
                     onPressed: () => _updateTrainSpeed(hub.device.deviceId, 50),
                     color: speed > 0 ? Colors.yellow : Colors.grey.shade300,
@@ -374,70 +375,6 @@ class _ControlScreenState extends State<ControlScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _SpeedButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback? onPressed;
-  final Color color;
-
-  const _SpeedButton({
-    required this.icon,
-    required this.onPressed,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 40,
-      height: 40,
-      child: MaterialButton(
-        onPressed: onPressed,
-        color: color,
-        disabledColor: Colors.grey,
-        shape: const CircleBorder(),
-        padding: EdgeInsets.zero,
-        child: Icon(
-          icon,
-          size: 24,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-}
-
-class _ControlButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback? onPressed;
-  final Color color;
-
-  const _ControlButton({
-    required this.icon,
-    required this.onPressed,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 40,
-      height: 40,
-      child: MaterialButton(
-        onPressed: onPressed,
-        color: color,
-        disabledColor: Colors.grey,
-        shape: const CircleBorder(),
-        padding: EdgeInsets.zero,
-        child: Icon(
-          icon,
-          size: 24,
-          color: Colors.white,
-        ),
       ),
     );
   }
