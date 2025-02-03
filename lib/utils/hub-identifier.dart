@@ -4,7 +4,7 @@ import 'package:universal_ble/universal_ble.dart';
 class HubIdentifier {
   static bool isLegoHub(BleDevice device) {
     final dataList = device.manufacturerDataList;
-    if (dataList == null || dataList.isEmpty) {
+    if (dataList.isEmpty) {
       return false;
     }
 
@@ -50,7 +50,7 @@ class HubIdentifier {
 
   static String getHubType(BleDevice device) {
     final dataList = device.manufacturerDataList;
-    if (dataList == null || dataList.isEmpty) {
+    if (dataList.isEmpty) {
       return 'Unknown Hub';
     }
 

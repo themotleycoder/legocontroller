@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 import '../services/lego-service.dart';
 import '../utils/constants.dart';
-import '../widgets/buttons.dart';
+import '../widgets/train-control-widget.dart';
+import '../widgets/technic-hub-control.dart';
+import '../utils/hub-identifier.dart';
 
 class ControlScreen extends StatefulWidget {
   const ControlScreen({super.key});
@@ -17,16 +18,16 @@ class _ControlScreenState extends State<ControlScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasConnectedTrains = _legoService.connectedHubs.any(
+    final bool hasConnectedDevices = _legoService.connectedHubs.any(
             (hub) => hub.state == HubConnectionState.connected
     );
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Train Controls'),
+        title: const Text('LEGO Controls'),
         elevation: 2,
         actions: [
-          if (hasConnectedTrains)
+          if (hasConnectedDevices)
             IconButton(
               icon: const Icon(Icons.bluetooth_disabled),
               tooltip: 'Disconnect All',
@@ -34,215 +35,39 @@ class _ControlScreenState extends State<ControlScreen> {
             ),
         ],
       ),
-      body: !hasConnectedTrains
-          ? _buildNoTrainsMessage()
+      body: !hasConnectedDevices
+          ? _buildNoDevicesMessage()
           : ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: _legoService.connectedHubs.length,
         itemBuilder: (context, index) {
           final hub = _legoService.connectedHubs[index];
-          return _buildTrainControl(hub);
+          return _buildHubControl(hub);
         },
       ),
     );
   }
 
-  Widget _buildTrainControl(ConnectedHub hub) {
-    // Initialize speed for this train if not already set
-    _trainSpeeds.putIfAbsent(hub.device.deviceId, () => 0);
-    final speed = _trainSpeeds[hub.device.deviceId]!;
-    final bool isMoving = speed != 0;
-    final String direction = speed > 0 ? 'Forward' : speed < 0 ? 'Backward' : 'Stopped';
+  Widget _buildHubControl(ConnectedHub hub) {
+    final hubType = HubIdentifier.getHubType(hub.device);
+    
+    if (hubType == 'Technic Hub') {
+      return TechnicHubControl(
+        hub: hub,
+        onDisconnect: (deviceId) => _showDisconnectDialog(context, hub),
+      );
+    } else {
+      // Initialize speed for this train if not already set
+      _trainSpeeds.putIfAbsent(hub.device.deviceId, () => 0);
+      final speed = _trainSpeeds[hub.device.deviceId]!;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 0,
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Train Header with Status
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        hub.device.name ?? 'Unknown Train',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'ID: ${hub.device.deviceId}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                StreamBuilder<HubConnectionState>(
-                  stream: hub.stateController.stream,
-                  initialData: hub.state,
-                  builder: (context, snapshot) {
-                    final state = snapshot.data!;
-                    return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(state).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _getStatusColor(state),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            state.toString().split('.').last,
-                            style: TextStyle(
-                              color: _getStatusColor(state),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-            const Divider(height: 32),
-
-            // Speed and Direction Display
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  speed > 0
-                      ? Icons.arrow_forward
-                      : speed < 0
-                      ? Icons.arrow_back
-                      : Icons.remove,
-                  color: isMoving ? Colors.green : Colors.grey,
-                  size: 24,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '${speed.abs()}%',
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    color: isMoving ? Colors.green : Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-            Center(
-              child: Text(
-                direction,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Speed Controls
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                SpeedButton(
-                  icon: Icons.remove,
-                  onPressed: speed > -100
-                      ? () => _updateTrainSpeed(hub.device.deviceId, max(speed - 10, -100))
-                      : null,
-                  color: Colors.red,
-                ),
-                SizedBox(
-                  width: 180,
-                  child: SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                      activeTrackColor: Colors.blue,
-                      inactiveTrackColor: Colors.grey[300],
-                      thumbColor: Colors.blue,
-                      trackHeight: 4,
-                    ),
-                    child: Slider(
-                      value: speed.toDouble(),
-                      min: -100,
-                      max: 100,
-                      divisions: 20,
-                      label: '${speed.abs()}%',
-                      onChanged: (value) => _updateTrainSpeed(hub.device.deviceId, value.toInt()),
-                    ),
-                  ),
-                ),
-                SpeedButton(
-                  icon: Icons.add,
-                  onPressed: speed < 100
-                      ? () => _updateTrainSpeed(hub.device.deviceId, min(speed + 10, 100))
-                      : null,
-                  color: Colors.green,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Direction Controls
-            Row(
-              children: [
-                Expanded(
-                  child: ControlButton(
-                    icon: Icons.arrow_back_ios,
-                    onPressed: () => _updateTrainSpeed(hub.device.deviceId, -50),
-                    color: speed < 0 ? Colors.yellow : Colors.grey.shade300,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                ControlButton(
-                  icon: Icons.stop,
-                  onPressed: isMoving ? () => _updateTrainSpeed(hub.device.deviceId, 0) : null,
-                  color: speed != 0 ? Colors.red : Colors.grey.shade300,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ControlButton(
-                    icon: Icons.arrow_forward_ios,
-                    onPressed: () => _updateTrainSpeed(hub.device.deviceId, 50),
-                    color: speed > 0 ? Colors.yellow : Colors.grey.shade300,
-                  ),
-                ),
-              ],
-            ),
-
-            // Disconnect Button
-            const SizedBox(height: 16),
-            TextButton.icon(
-              onPressed: () => _showDisconnectDialog(context, hub),
-              icon: const Icon(Icons.bluetooth_disabled),
-              label: const Text('Disconnect'),
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.red,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+      return TrainControlWidget(
+        hub: hub,
+        currentSpeed: speed,
+        onSpeedChanged: _updateTrainSpeed,
+        onDisconnect: (deviceId) => _showDisconnectDialog(context, hub),
+      );
+    }
   }
 
   Future<void> _updateTrainSpeed(String deviceId, int newSpeed) async {
@@ -257,7 +82,7 @@ class _ControlScreenState extends State<ControlScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error controlling train: $e'),
+            content: Text('Error controlling device: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -266,13 +91,16 @@ class _ControlScreenState extends State<ControlScreen> {
   }
 
   Future<void> _showDisconnectDialog(BuildContext context, ConnectedHub hub) {
+    final hubType = HubIdentifier.getHubType(hub.device);
+    final isTrainHub = hubType == 'Train Hub';
+    
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Disconnect Train?'),
+        title: Text('Disconnect ${isTrainHub ? "Train" : "Device"}?'),
         content: Text(
-          'Are you sure you want to disconnect ${hub.device.name ?? "this train"}?\n\n'
-              'The train will stop moving if currently in motion.',
+          'Are you sure you want to disconnect ${hub.device.name ?? "this device"}?\n\n'
+              '${isTrainHub ? "The train" : "The device"} will stop if currently in motion.',
         ),
         actions: [
           TextButton(
@@ -281,8 +109,10 @@ class _ControlScreenState extends State<ControlScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              // Stop the train first
-              await _updateTrainSpeed(hub.device.deviceId, 0);
+              if (isTrainHub) {
+                // Stop the train first
+                await _updateTrainSpeed(hub.device.deviceId, 0);
+              }
               // Then disconnect
               await _legoService.disconnect(hub.device.deviceId);
               if (mounted) {
@@ -304,10 +134,10 @@ class _ControlScreenState extends State<ControlScreen> {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Disconnect All Trains?'),
+        title: const Text('Disconnect All Devices?'),
         content: const Text(
-          'Are you sure you want to disconnect all trains?\n\n'
-              'All trains will stop moving if currently in motion.',
+          'Are you sure you want to disconnect all devices?\n\n'
+              'All devices will stop if currently in motion.',
         ),
         actions: [
           TextButton(
@@ -318,7 +148,9 @@ class _ControlScreenState extends State<ControlScreen> {
             onPressed: () async {
               // Stop all trains first
               for (var hub in _legoService.connectedHubs) {
-                await _updateTrainSpeed(hub.device.deviceId, 0);
+                if (HubIdentifier.getHubType(hub.device) == 'Train Hub') {
+                  await _updateTrainSpeed(hub.device.deviceId, 0);
+                }
               }
               // Then disconnect all
               await _legoService.disconnectAll();
@@ -337,39 +169,26 @@ class _ControlScreenState extends State<ControlScreen> {
     );
   }
 
-  Color _getStatusColor(HubConnectionState state) {
-    switch (state) {
-      case HubConnectionState.connected:
-        return Colors.green;
-      case HubConnectionState.connecting:
-        return Colors.orange;
-      case HubConnectionState.error:
-        return Colors.red;
-      case HubConnectionState.disconnected:
-        return Colors.grey;
-    }
-  }
-
-  Widget _buildNoTrainsMessage() {
+  Widget _buildNoDevicesMessage() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.train_outlined,
+            Icons.bluetooth_connected,
             size: 64,
             color: Colors.grey[400],
           ),
           const SizedBox(height: 16),
           Text(
-            'No trains connected',
+            'No devices connected',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: Colors.grey[600],
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Go to the Connect tab to add trains',
+            'Go to the Connect tab to add devices',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.grey[600],
             ),

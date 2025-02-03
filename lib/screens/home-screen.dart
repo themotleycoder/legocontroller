@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:legocontroller/screens/scan-screen.dart';
-
 import 'control-screen.dart';
 
 class HomeScreen extends StatefulWidget {

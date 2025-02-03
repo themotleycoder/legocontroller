@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class MotorControl extends StatefulWidget {
+class TrainHubControl extends StatefulWidget {
   final int motorPort;
   final String label;
   final Future<void> Function(int port, int power) onPowerChanged;
 
-  const MotorControl({
+  const TrainHubControl({
     super.key,
     required this.motorPort,
     required this.label,
@@ -13,10 +13,10 @@ class MotorControl extends StatefulWidget {
   });
 
   @override
-  State<MotorControl> createState() => _MotorControlState();
+  State<TrainHubControl> createState() => _TrainHubControlState();
 }
 
-class _MotorControlState extends State<MotorControl> {
+class _TrainHubControlState extends State<TrainHubControl> {
   double _power = 0;
   bool _isActive = false;
 
