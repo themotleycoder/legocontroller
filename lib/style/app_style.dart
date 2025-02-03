@@ -103,7 +103,6 @@ class AppStyle {
       primary: primaryColor,
       secondary: secondaryColor,
       error: errorColor,
-      background: background,
       surface: surface,
     ),
     scaffoldBackgroundColor: background,

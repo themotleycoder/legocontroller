@@ -6,7 +6,7 @@ class SpeedButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Color color;
 
-  const SpeedButton({
+  const SpeedButton({super.key, 
     required this.icon,
     required this.onPressed,
     required this.color,
@@ -38,7 +38,7 @@ class ControlButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Color color;
 
-  const ControlButton({
+  const ControlButton({super.key, 
     required this.icon,
     required this.onPressed,
     required this.color,

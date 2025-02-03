@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:legocontroller/style/app_style.dart';
 import 'package:universal_ble/universal_ble.dart';
 import '../services/lego-service.dart';
+import '../utils/hub-identifier.dart';
 import '../widgets/buttons.dart';
 
 class ScanTab extends StatefulWidget {
@@ -28,7 +29,7 @@ class _ScanTabState extends State<ScanTab> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).colorScheme.background,
+              Theme.of(context).colorScheme.surface,
               Theme.of(context).colorScheme.surface,
             ],
           ),
@@ -97,6 +98,8 @@ class _ScanTabState extends State<ScanTab> {
       itemCount: _devices.length,
       itemBuilder: (context, index) {
         final device = _devices[index];
+        final hubType = HubIdentifier.getHubType(device);
+
         return Card(
           elevation: 2,
           margin: const EdgeInsets.only(bottom: 12),
@@ -113,13 +116,13 @@ class _ScanTabState extends State<ScanTab> {
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Icon(
-                Icons.train,
+                hubType.contains('Remote') ? Icons.tv : Icons.memory,
                 color: Theme.of(context).primaryColor,
                 size: 24,
               ),
             ),
             title: Text(
-              device.name ?? 'Unknown Train',
+              device.name ?? 'Unknown Device',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -128,6 +131,13 @@ class _ScanTabState extends State<ScanTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 4),
+                Text(
+                  hubType,
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 Text(
                   'ID: ${device.deviceId}',
                   style: TextStyle(
@@ -140,7 +150,7 @@ class _ScanTabState extends State<ScanTab> {
             trailing: SizedBox(
               child: ControlButton(
                 icon: Icons.add,
-                onPressed:  !_legoService.canConnectMore
+                onPressed: !_legoService.canConnectMore
                     ? null
                     : () => _connectToDevice(device),
                 color: AppStyle.accentColor,

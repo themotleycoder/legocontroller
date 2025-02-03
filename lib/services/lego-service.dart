@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:universal_ble/universal_ble.dart';
 import '../utils/constants.dart';
+import '../utils/hub-identifier.dart';
 
 enum HubConnectionState { disconnected, connecting, connected, error }
 
@@ -74,10 +75,11 @@ class LegoService {
     try {
       // Set up scan result handler
       UniversalBle.onScanResult = (BleDevice device) {
-        if (device.name?.contains('HUB') ?? false) {
+        if (HubIdentifier.isLegoHub(device)) {
           // Don't add already connected devices or duplicates
           if (!_connectedHubs.containsKey(device.deviceId) &&
               !seenDeviceIds.contains(device.deviceId)) {
+            print('Found LEGO Hub: ${HubIdentifier.getHubType(device)} - ${device.name}');
             seenDeviceIds.add(device.deviceId);
             devices.add(device);
           }
@@ -96,7 +98,7 @@ class LegoService {
 
     } catch (e) {
       print('Scan error: $e');
-      rethrow;  // Rethrow to handle in UI
+      rethrow;
     }
 
     return devices;
