@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/lego-service.dart';
+import '../services/lego-webservice.dart';
 import '../utils/constants.dart';
 import '../widgets/train-control-widget.dart';
 import '../widgets/technic-hub-control.dart';
 import '../utils/hub-identifier.dart';
+import '../models/train_status.dart';
+import '../providers/train_state_provider.dart';
+import '../providers/switch_state_provider.dart';
 
 class ControlScreen extends StatefulWidget {
   const ControlScreen({super.key});
@@ -14,14 +19,10 @@ class ControlScreen extends StatefulWidget {
 
 class _ControlScreenState extends State<ControlScreen> {
   final LegoService _legoService = LegoService();
-  final Map<String, int> _trainSpeeds = {};
 
   @override
   Widget build(BuildContext context) {
-    final bool hasConnectedDevices = _legoService.connectedHubs.any(
-            (hub) => hub.state == HubConnectionState.connected
-    );
-
+    const bool hasConnectedDevices = true;
     return Scaffold(
       appBar: AppBar(
         title: const Text('LEGO Controls'),
@@ -37,70 +38,43 @@ class _ControlScreenState extends State<ControlScreen> {
       ),
       body: !hasConnectedDevices
           ? _buildNoDevicesMessage()
-          : ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _legoService.connectedHubs.length,
-        itemBuilder: (context, index) {
-          final hub = _legoService.connectedHubs[index];
-          return _buildHubControl(hub);
-        },
-      ),
+          : Consumer<TrainStateProvider>(
+              builder: (context, trainProvider, _) {
+                if (trainProvider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (trainProvider.trainStatus == null) {
+                  return const Center(child: Text('No train status available'));
+                }
+
+                final trains = trainProvider.trainStatus!.trains;
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: trains.length,
+                  itemBuilder: (context, index) {
+                    final trainId = trains.keys.elementAt(index);
+                    return TrainControlWidget(trainId: trainId);
+                  },
+                );
+              },
+            ),
     );
   }
 
-  Widget _buildHubControl(ConnectedHub hub) {
-    final hubType = HubIdentifier.getHubType(hub.device);
-    
-    if (hubType == 'Technic Hub') {
-      return TechnicHubControl(
-        hub: hub,
-        onDisconnect: (deviceId) => _showDisconnectDialog(context, hub),
-      );
-    } else {
-      // Initialize speed for this train if not already set
-      _trainSpeeds.putIfAbsent(hub.device.deviceId, () => 0);
-      final speed = _trainSpeeds[hub.device.deviceId]!;
 
-      return TrainControlWidget(
-        hub: hub,
-        currentSpeed: speed,
-        onSpeedChanged: _updateTrainSpeed,
-        onDisconnect: (deviceId) => _showDisconnectDialog(context, hub),
-      );
-    }
-  }
-
-  Future<void> _updateTrainSpeed(String deviceId, int newSpeed) async {
-    setState(() {
-      _trainSpeeds[deviceId] = newSpeed;
-    });
-
-    try {
-      await _legoService.setMotorPower(deviceId, LegoConstants.portA, newSpeed);
-      await _legoService.setMotorPower(deviceId, LegoConstants.portB, newSpeed);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error controlling device: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _showDisconnectDialog(BuildContext context, ConnectedHub hub) {
-    final hubType = HubIdentifier.getHubType(hub.device);
-    final isTrainHub = hubType == 'Train Hub';
+  Future<void> _showDisconnectDialog(BuildContext context, String trainId) {
+    final trainProvider = context.read<TrainStateProvider>();
+    final train = trainProvider.trainStatus?.trains[trainId];
+    if (train == null) return Future.value();
     
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Disconnect ${isTrainHub ? "Train" : "Device"}?'),
+        title: const Text('Disconnect Train?'),
         content: Text(
-          'Are you sure you want to disconnect ${hub.device.name ?? "this device"}?\n\n'
-              '${isTrainHub ? "The train" : "The device"} will stop if currently in motion.',
+          'Are you sure you want to disconnect ${train.name}?\n\n'
+              'The train will stop if currently in motion.',
         ),
         actions: [
           TextButton(
@@ -109,12 +83,9 @@ class _ControlScreenState extends State<ControlScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (isTrainHub) {
-                // Stop the train first
-                await _updateTrainSpeed(hub.device.deviceId, 0);
-              }
-              // Then disconnect
-              await _legoService.disconnect(hub.device.deviceId);
+              // Stop the train first
+              await trainProvider.controlTrain(command: TrainCommand.stop);
+              // TODO: Implement disconnect in TrainStateProvider
               if (mounted) {
                 Navigator.pop(context);
               }
@@ -131,13 +102,15 @@ class _ControlScreenState extends State<ControlScreen> {
   }
 
   Future<void> _showDisconnectAllDialog(BuildContext context) {
+    final trainProvider = context.read<TrainStateProvider>();
+    
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Disconnect All Devices?'),
+        title: const Text('Disconnect All Trains?'),
         content: const Text(
-          'Are you sure you want to disconnect all devices?\n\n'
-              'All devices will stop if currently in motion.',
+          'Are you sure you want to disconnect all trains?\n\n'
+              'All trains will stop if currently in motion.',
         ),
         actions: [
           TextButton(
@@ -147,13 +120,8 @@ class _ControlScreenState extends State<ControlScreen> {
           ElevatedButton(
             onPressed: () async {
               // Stop all trains first
-              for (var hub in _legoService.connectedHubs) {
-                if (HubIdentifier.getHubType(hub.device) == 'Train Hub') {
-                  await _updateTrainSpeed(hub.device.deviceId, 0);
-                }
-              }
-              // Then disconnect all
-              await _legoService.disconnectAll();
+              await trainProvider.controlTrain(command: TrainCommand.stop);
+              // TODO: Implement disconnectAll in TrainStateProvider
               if (mounted) {
                 Navigator.pop(context);
               }
