@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../widgets/train-control-widget.dart';
-import '../models/train_status.dart';
-import '../providers/train_state_provider.dart';
-import '../models/train_command.dart';
+import '../widgets/switch-control-widget.dart';
+import '../providers/switch_state_provider.dart';
 
-class TrainScreen extends StatefulWidget {
-  const TrainScreen({super.key});
+class SwitchScreen extends StatefulWidget {
+  const SwitchScreen({super.key});
 
   @override
-  State<TrainScreen> createState() => _TrainScreenState();
+  State<SwitchScreen> createState() => _SwitchScreenState();
 }
 
-class _TrainScreenState extends State<TrainScreen> {
+class _SwitchScreenState extends State<SwitchScreen> {
   @override
   Widget build(BuildContext context) {
-    final hasConnectedDevices = context.select<TrainStateProvider, bool>(
-      (provider) => (provider.trainStatus?.connectedTrains ?? 0) > 0
+    final hasConnectedDevices = context.select<SwitchStateProvider, bool>(
+      (provider) => (provider.switchStatus?.connectedSwitches ?? 0) > 0
     );
     return Scaffold(
       appBar: AppBar(
@@ -33,23 +31,23 @@ class _TrainScreenState extends State<TrainScreen> {
       ),
       body: !hasConnectedDevices
           ? _buildNoDevicesMessage()
-          : Consumer<TrainStateProvider>(
-              builder: (context, trainProvider, _) {
-                if (trainProvider.isLoading) {
+          : Consumer<SwitchStateProvider>(
+              builder: (context, switchProvider, _) {
+                if (switchProvider.isLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (trainProvider.trainStatus == null) {
-                  return const Center(child: Text('No train status available'));
+                if (switchProvider.switchStatus == null) {
+                  return const Center(child: Text('No switch status available'));
                 }
 
-                final trains = trainProvider.trainStatus!.trains;
+                final switches = switchProvider.switchStatus!.switches;
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: trains.length,
+                  itemCount: switches.length,
                   itemBuilder: (context, index) {
-                    final trainId = trains.keys.elementAt(index);
-                    return TrainControlWidget(trainId: trainId);
+                    final switchId = switches.keys.elementAt(index);
+                    return SwitchControlWidget(switchId: switchId);
                   },
                 );
               },
@@ -58,52 +56,16 @@ class _TrainScreenState extends State<TrainScreen> {
   }
 
 
-  Future<void> _showDisconnectDialog(BuildContext context, String trainId) {
-    final trainProvider = context.read<TrainStateProvider>();
-    final train = trainProvider.trainStatus?.trains[trainId];
-    if (train == null) return Future.value();
-    
-    return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Disconnect Train?'),
-        content: Text(
-          'Are you sure you want to disconnect ${train.name}?\n\n'
-              'The train will stop if currently in motion.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await trainProvider.disconnect(trainId);
-              if (mounted) {
-                Navigator.pop(context);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Disconnect'),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _showDisconnectAllDialog(BuildContext context) {
-    final trainProvider = context.read<TrainStateProvider>();
+    final switchProvider = context.read<SwitchStateProvider>();
     
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Disconnect All Trains?'),
+        title: const Text('Disconnect All Switches?'),
         content: const Text(
-          'Are you sure you want to disconnect all trains?\n\n'
-              'All trains will stop if currently in motion.',
+          'Are you sure you want to disconnect all switches?\n\n'
+              'This will reset all switch positions.',
         ),
         actions: [
           TextButton(
@@ -112,7 +74,7 @@ class _TrainScreenState extends State<TrainScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              await trainProvider.disconnectAll();
+              await switchProvider.disconnectAll();
               if (mounted) {
                 Navigator.pop(context);
               }

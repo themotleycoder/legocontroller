@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:legocontroller/screens/scan-screen.dart';
-import 'control-screen.dart';
+import 'train-screen.dart';
+import 'switch-screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,8 +13,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _tabs = [
-    const ControlScreen(),
-    const ScanTab(),
+    const TrainScreen(),
+    const SwitchScreen(),
   ];
 
   @override
@@ -31,11 +31,11 @@ class _HomeScreenState extends State<HomeScreen> {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.train),
-            label: 'Control',
+            label: 'Trains',
           ),
           NavigationDestination(
-            icon: Icon(Icons.bluetooth_searching),
-            label: 'Connect',
+            icon: Icon(Icons.call_split),
+            label: 'Switches',
           ),
         ],
       ),
