@@ -20,7 +20,7 @@ class _TrainScreenState extends State<TrainScreen> {
     );
     return Scaffold(
       appBar: AppBar(
-        title: const Text('LEGO Controls'),
+        title: const Text('Lego Train Controls'),
         elevation: 2,
         actions: [
           if (hasConnectedDevices)

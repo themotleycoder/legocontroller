@@ -4,25 +4,27 @@ import 'dart:math';
 import '../providers/train_state_provider.dart';
 import '../widgets/buttons.dart';
 import '../models/train_command.dart';
+import '../models/train_status.dart';
 
 class TrainControlWidget extends StatelessWidget {
   final String trainId;
+  late final Train train;
 
-  const TrainControlWidget({
+  TrainControlWidget({
     super.key,
     required this.trainId,
   });
 
   void _updateSpeed(BuildContext context, int speed) {
-    final command = speed == 0 
-        ? TrainCommand.stop 
-        : speed > 0 
-            ? TrainCommand.forward 
-            : TrainCommand.backward;
+    // final command = speed == 0
+    //         ? TrainCommand.stop
+    //         : speed > 0
+    //             ? TrainCommand.forward
+    //             : TrainCommand.backward;
             
     context.read<TrainStateProvider>().controlTrain(
-      command: command,
-      power: speed.abs(),
+      hubId: int.parse(trainId),
+      power: speed,
     );
   }
 
@@ -38,15 +40,17 @@ class TrainControlWidget extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final train = trainProvider.trainStatus!.trains[trainId];
-        if (train == null) {
+        final currentTrain = trainProvider.trainStatus!.trains[trainId];
+        if (currentTrain == null) {
           return const SizedBox.shrink();
         }
+        train = currentTrain;
 
-        final speed = train.speed.toInt();
+        // Convert speed to integer and ensure it's within slider range
+        final speed = train.speed.round().clamp(-100, 100);
         final bool isMoving = speed != 0;
         final String direction = train.direction;
-
+        print("speed: $speed");
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
           elevation: 0,
@@ -129,7 +133,7 @@ class TrainControlWidget extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '${speed.abs()}%',
+                      '$speed',
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
                         color: isMoving ? Colors.green : Colors.grey,
                       ),
@@ -171,8 +175,8 @@ class TrainControlWidget extends StatelessWidget {
                           value: speed.toDouble(),
                           min: -100,
                           max: 100,
-                          divisions: 20,
-                          label: '${speed.abs()}%',
+                          divisions: 10,
+                          label: '$speed%',
                           onChanged: (value) => _updateSpeed(context, value.toInt()),
                         ),
                       ),

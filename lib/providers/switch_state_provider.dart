@@ -38,11 +38,13 @@ class SwitchStateProvider with ChangeNotifier {
   }
 
   Future<void> controlSwitch({
+    required int hubId,
     required String switchId,
     required SwitchPosition position,
   }) async {
     try {
       await _webService.controlSwitch(
+        hubId: hubId,
         switchId: switchId,
         position: position,
       );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/switch_state_provider.dart';
-import '../models/switch_status.dart';
+import '../models/switch_status.dart' as switch_model;
 
 class SwitchControlWidget extends StatelessWidget {
   final String switchId;
@@ -19,10 +19,11 @@ class SwitchControlWidget extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final switchData = switchProvider.switchStatus!.switches[switchId];
-        if (switchData == null) {
+        final currentSwitch = switchProvider.switchStatus!.switches[switchId];
+        if (currentSwitch == null) {
           return const SizedBox.shrink();
         }
+        final switchData = currentSwitch;
 
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
@@ -92,32 +93,89 @@ class SwitchControlWidget extends StatelessWidget {
                 const Divider(height: 32),
 
                 // Switch Position Controls
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () => switchProvider.controlSwitch(
-                        switchId: switchId,
-                        position: SwitchPosition.straight,
+                Column(
+                  children: ['A', 'B', 'C', 'D'].map((switchLetter) {
+                    final currentSwitchId = "SWITCH_$switchLetter";
+                    // Only show switches that have a position set
+                    if (!switchData.switchPositions.containsKey(currentSwitchId)) {
+                      return const SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Switch $switchLetter',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        switchProvider.controlSwitch(
+                                          hubId: int.parse(switchId),
+                                          switchId: currentSwitchId,
+                                          position: switch_model.SwitchPosition.STRAIGHT,
+                                        );
+                                      },
+                                      style: TextButton.styleFrom(
+                                        backgroundColor: switchData.switchPositions[currentSwitchId] == 0 ? Colors.blue : null,
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.horizontal(left: Radius.circular(20)),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      ),
+                                      child: Text(
+                                        'Straight',
+                                        style: TextStyle(
+                                          color: switchData.switchPositions[currentSwitchId] == 0 ? Colors.white : Colors.black87,
+                                        ),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        switchProvider.controlSwitch(
+                                          hubId: int.parse(switchId),
+                                          switchId: currentSwitchId,
+                                          position: switch_model.SwitchPosition.DIVERGING,
+                                        );
+                                      },
+                                      style: TextButton.styleFrom(
+                                        backgroundColor: switchData.switchPositions[currentSwitchId] == 1 ? Colors.blue : null,
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.horizontal(right: Radius.circular(20)),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      ),
+                                      child: Text(
+                                        'Turn',
+                                        style: TextStyle(
+                                          color: switchData.switchPositions[currentSwitchId] == 1 ? Colors.white : Colors.black87,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      icon: const Icon(Icons.arrow_forward),
-                      label: const Text('Straight'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: switchData.position == 0 ? Colors.blue : Colors.grey,
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () => switchProvider.controlSwitch(
-                        switchId: switchId,
-                        position: SwitchPosition.turn,
-                      ),
-                      icon: const Icon(Icons.turn_right),
-                      label: const Text('Turn'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: switchData.position == 1 ? Colors.blue : Colors.grey,
-                      ),
-                    ),
-                  ],
+                    );
+                  }).toList(),
                 ),
 
                 const SizedBox(height: 16),

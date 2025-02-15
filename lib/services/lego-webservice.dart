@@ -39,13 +39,12 @@ class TrainWebService {
   }
 
   Future<void> controlTrain({
-    int hubId = 0,
-    required TrainCommand command,
-    int power = 40
+    required int hubId,
+    required int power
   }) async {
     final url = Uri.parse('$baseUrl/train');
 
-    final commandStr = command.toString().split('.').last.toUpperCase();
+    // final commandStr = command.toString().split('.').last.toUpperCase();
 
     try {
       final response = await http.post(
@@ -53,7 +52,6 @@ class TrainWebService {
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             'hub_id': hubId,
-            'command': commandStr,
             'power': power
           })
       );
@@ -71,13 +69,14 @@ class TrainWebService {
   }
 
   Future<void> controlSwitch({
-    int hubId = 0,
-    required String switchId,  // "A" or "B"
+    required int hubId,
+    required String switchId,  // "SWITCH_A", "SWITCH_B", etc.
     required SwitchPosition position,
   }) async {
     final url = Uri.parse('$baseUrl/switch');
 
-    final positionStr = position.toString().split('.').last.toUpperCase();
+    final positionStr = position.toString().split('.').last;
+    final switchName = switchId.substring(switchId.lastIndexOf("_")+1,switchId.length);
 
     try {
       final response = await http.post(
@@ -85,7 +84,7 @@ class TrainWebService {
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             'hub_id': hubId,
-            'switch': switchId.toUpperCase(),
+            'switch': switchName,
             'position': positionStr
           })
       );

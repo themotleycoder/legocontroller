@@ -21,8 +21,9 @@ Map<String, dynamic> _$$SwitchStatusImplToJson(_$SwitchStatusImpl instance) =>
     };
 
 _$SwitchImpl _$$SwitchImplFromJson(Map<String, dynamic> json) => _$SwitchImpl(
-      position: (json['position'] as num).toInt(),
-      lastUpdateSecondsAgo: (json['last_update_seconds_ago'] as num).toDouble(),
+      switchPositions: Map<String, int>.from(json['switch_positions'] as Map),
+      lastUpdateSecondsAgo:
+          (json['last_update_seconds_ago'] as num?)?.toDouble() ?? 0.0,
       name: json['name'] as String,
       status: (json['status'] as num).toInt(),
       connected: json['connected'] as bool,
@@ -30,7 +31,7 @@ _$SwitchImpl _$$SwitchImplFromJson(Map<String, dynamic> json) => _$SwitchImpl(
 
 Map<String, dynamic> _$$SwitchImplToJson(_$SwitchImpl instance) =>
     <String, dynamic>{
-      'position': instance.position,
+      'switch_positions': instance.switchPositions,
       'last_update_seconds_ago': instance.lastUpdateSecondsAgo,
       'name': instance.name,
       'status': instance.status,

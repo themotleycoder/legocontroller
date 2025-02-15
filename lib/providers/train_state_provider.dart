@@ -53,30 +53,23 @@ class TrainStateProvider with ChangeNotifier {
   }
 
   Future<void> controlTrain({
-    int hubId = 0,
-    required TrainCommand command,
-    int power = 40,
+    required int hubId,
+    required int power, // Default power
   }) async {
     try {
       final trains = _trainStatus?.trains;
       if (trains == null || trains.isEmpty) return;
-
+      
       await _webService.controlTrain(
         hubId: hubId,
-        command: command,
         power: power,
       );
 
       // Update speed and direction tracking
-      final trainId = trains.keys.elementAt(hubId).toString();
-      final motorPower = switch (command) {
-        TrainCommand.forward => power,
-        TrainCommand.backward => -power,
-        TrainCommand.stop => 0,
-      };
-      _trainSpeeds[trainId] = motorPower;
-      _trainDirections[trainId] = motorPower == 0 ? "Stopped" : 
-                                 motorPower > 0 ? "Forward" : "Backward";
+      final trainId = hubId.toString();
+      _trainSpeeds[trainId] = power;
+      _trainDirections[trainId] = power == 0 ? "Stopped" :
+                               power > 0 ? "Forward" : "Backward";
 
       // Immediately fetch new status after control command
       await _fetchTrainStatus();
@@ -94,7 +87,9 @@ class TrainStateProvider with ChangeNotifier {
       
       // Send stop command through web service
       await _webService.controlTrain(
-        command: TrainCommand.stop,
+        hubId: int.parse(trainId),
+        power: 0,
+        // command: TrainCommand.stop,
       );
       
       // Update status
