@@ -26,6 +26,8 @@ class Switch with _$Switch {
     required String name,
     required int status,
     required bool connected,
+    required bool active,
+    @JsonKey(name: 'port_connections') Map<String, dynamic>? portConnections,
   }) = _Switch;
 
   factory Switch.fromJson(Map<String, dynamic> json) => _$SwitchFromJson(json);

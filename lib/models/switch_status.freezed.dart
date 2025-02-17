@@ -212,6 +212,10 @@ mixin _$Switch {
   String get name => throw _privateConstructorUsedError;
   int get status => throw _privateConstructorUsedError;
   bool get connected => throw _privateConstructorUsedError;
+  bool get active => throw _privateConstructorUsedError;
+  @JsonKey(name: 'port_connections')
+  Map<String, dynamic>? get portConnections =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this Switch to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -233,7 +237,10 @@ abstract class $SwitchCopyWith<$Res> {
       double lastUpdateSecondsAgo,
       String name,
       int status,
-      bool connected});
+      bool connected,
+      bool active,
+      @JsonKey(name: 'port_connections')
+      Map<String, dynamic>? portConnections});
 }
 
 /// @nodoc
@@ -256,6 +263,8 @@ class _$SwitchCopyWithImpl<$Res, $Val extends Switch>
     Object? name = null,
     Object? status = null,
     Object? connected = null,
+    Object? active = null,
+    Object? portConnections = freezed,
   }) {
     return _then(_value.copyWith(
       switchPositions: null == switchPositions
@@ -278,6 +287,14 @@ class _$SwitchCopyWithImpl<$Res, $Val extends Switch>
           ? _value.connected
           : connected // ignore: cast_nullable_to_non_nullable
               as bool,
+      active: null == active
+          ? _value.active
+          : active // ignore: cast_nullable_to_non_nullable
+              as bool,
+      portConnections: freezed == portConnections
+          ? _value.portConnections
+          : portConnections // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>?,
     ) as $Val);
   }
 }
@@ -295,7 +312,10 @@ abstract class _$$SwitchImplCopyWith<$Res> implements $SwitchCopyWith<$Res> {
       double lastUpdateSecondsAgo,
       String name,
       int status,
-      bool connected});
+      bool connected,
+      bool active,
+      @JsonKey(name: 'port_connections')
+      Map<String, dynamic>? portConnections});
 }
 
 /// @nodoc
@@ -316,6 +336,8 @@ class __$$SwitchImplCopyWithImpl<$Res>
     Object? name = null,
     Object? status = null,
     Object? connected = null,
+    Object? active = null,
+    Object? portConnections = freezed,
   }) {
     return _then(_$SwitchImpl(
       switchPositions: null == switchPositions
@@ -338,6 +360,14 @@ class __$$SwitchImplCopyWithImpl<$Res>
           ? _value.connected
           : connected // ignore: cast_nullable_to_non_nullable
               as bool,
+      active: null == active
+          ? _value.active
+          : active // ignore: cast_nullable_to_non_nullable
+              as bool,
+      portConnections: freezed == portConnections
+          ? _value._portConnections
+          : portConnections // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>?,
     ));
   }
 }
@@ -352,8 +382,12 @@ class _$SwitchImpl implements _Switch {
       required this.lastUpdateSecondsAgo,
       required this.name,
       required this.status,
-      required this.connected})
-      : _switchPositions = switchPositions;
+      required this.connected,
+      required this.active,
+      @JsonKey(name: 'port_connections')
+      final Map<String, dynamic>? portConnections})
+      : _switchPositions = switchPositions,
+        _portConnections = portConnections;
 
   factory _$SwitchImpl.fromJson(Map<String, dynamic> json) =>
       _$$SwitchImplFromJson(json);
@@ -376,10 +410,22 @@ class _$SwitchImpl implements _Switch {
   final int status;
   @override
   final bool connected;
+  @override
+  final bool active;
+  final Map<String, dynamic>? _portConnections;
+  @override
+  @JsonKey(name: 'port_connections')
+  Map<String, dynamic>? get portConnections {
+    final value = _portConnections;
+    if (value == null) return null;
+    if (_portConnections is EqualUnmodifiableMapView) return _portConnections;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(value);
+  }
 
   @override
   String toString() {
-    return 'Switch(switchPositions: $switchPositions, lastUpdateSecondsAgo: $lastUpdateSecondsAgo, name: $name, status: $status, connected: $connected)';
+    return 'Switch(switchPositions: $switchPositions, lastUpdateSecondsAgo: $lastUpdateSecondsAgo, name: $name, status: $status, connected: $connected, active: $active, portConnections: $portConnections)';
   }
 
   @override
@@ -394,7 +440,10 @@ class _$SwitchImpl implements _Switch {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.connected, connected) ||
-                other.connected == connected));
+                other.connected == connected) &&
+            (identical(other.active, active) || other.active == active) &&
+            const DeepCollectionEquality()
+                .equals(other._portConnections, _portConnections));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -405,7 +454,9 @@ class _$SwitchImpl implements _Switch {
       lastUpdateSecondsAgo,
       name,
       status,
-      connected);
+      connected,
+      active,
+      const DeepCollectionEquality().hash(_portConnections));
 
   /// Create a copy of Switch
   /// with the given fields replaced by the non-null parameter values.
@@ -431,7 +482,10 @@ abstract class _Switch implements Switch {
       required final double lastUpdateSecondsAgo,
       required final String name,
       required final int status,
-      required final bool connected}) = _$SwitchImpl;
+      required final bool connected,
+      required final bool active,
+      @JsonKey(name: 'port_connections')
+      final Map<String, dynamic>? portConnections}) = _$SwitchImpl;
 
   factory _Switch.fromJson(Map<String, dynamic> json) = _$SwitchImpl.fromJson;
 
@@ -447,6 +501,11 @@ abstract class _Switch implements Switch {
   int get status;
   @override
   bool get connected;
+  @override
+  bool get active;
+  @override
+  @JsonKey(name: 'port_connections')
+  Map<String, dynamic>? get portConnections;
 
   /// Create a copy of Switch
   /// with the given fields replaced by the non-null parameter values.

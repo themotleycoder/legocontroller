@@ -27,6 +27,8 @@ _$SwitchImpl _$$SwitchImplFromJson(Map<String, dynamic> json) => _$SwitchImpl(
       name: json['name'] as String,
       status: (json['status'] as num).toInt(),
       connected: json['connected'] as bool,
+      active: json['active'] as bool,
+      portConnections: json['port_connections'] as Map<String, dynamic>?,
     );
 
 Map<String, dynamic> _$$SwitchImplToJson(_$SwitchImpl instance) =>
@@ -36,4 +38,6 @@ Map<String, dynamic> _$$SwitchImplToJson(_$SwitchImpl instance) =>
       'name': instance.name,
       'status': instance.status,
       'connected': instance.connected,
+      'active': instance.active,
+      'port_connections': instance.portConnections,
     };
