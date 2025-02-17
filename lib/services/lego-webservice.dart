@@ -29,7 +29,7 @@ class TrainWebService {
 
   String baseUrl;
 
-  TrainWebService._internal() : baseUrl = 'http://192.168.86.41:8000';
+  TrainWebService._internal() : baseUrl = 'http://192.168.86.39:8000';
 
   // Allow custom base URL for different environments
   void configure({String? customBaseUrl}) {
@@ -47,15 +47,17 @@ class TrainWebService {
     // final commandStr = command.toString().split('.').last.toUpperCase();
 
     try {
+      final payload = {
+        'hub_id': hubId,
+        'power': power
+      };
+      
       final response = await http.post(
           url,
           headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'hub_id': hubId,
-            'power': power
-          })
+          body: jsonEncode(payload)
       );
-
+      
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
             'Failed to control train: ${response.body}'

@@ -70,6 +70,8 @@ class TrainStateProvider with ChangeNotifier {
       _trainSpeeds[trainId] = power;
       _trainDirections[trainId] = power == 0 ? "Stopped" :
                                power > 0 ? "Forward" : "Backward";
+      
+      print('Updated train $trainId power to: $power');
 
       // Immediately fetch new status after control command
       await _fetchTrainStatus();

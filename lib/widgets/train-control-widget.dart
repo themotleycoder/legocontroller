@@ -46,11 +46,11 @@ class TrainControlWidget extends StatelessWidget {
         }
         train = currentTrain;
 
-        // Convert speed to integer and ensure it's within slider range
-        final speed = train.speed.round().clamp(-100, 100);
-        final bool isMoving = speed != 0;
+        // Get the current power value from the provider
+        final power = trainProvider.getTrainSpeed(trainId);
+        final bool isMoving = power != 0;
         final String direction = train.direction;
-        print("speed: $speed");
+        print("power: $power");
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
           elevation: 0,
@@ -123,9 +123,9 @@ class TrainControlWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      speed > 0
+                      power > 0
                           ? Icons.arrow_forward
-                          : speed < 0
+                          : power < 0
                           ? Icons.arrow_back
                           : Icons.remove,
                       color: isMoving ? Colors.green : Colors.grey,
@@ -133,7 +133,7 @@ class TrainControlWidget extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '$speed',
+                      '$power',
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
                         color: isMoving ? Colors.green : Colors.grey,
                       ),
@@ -157,8 +157,8 @@ class TrainControlWidget extends StatelessWidget {
                   children: [
                     SpeedButton(
                       icon: Icons.remove,
-                      onPressed: speed > -100
-                          ? () => _updateSpeed(context, max(speed - 10, -100))
+                      onPressed: power > -100
+                          ? () => _updateSpeed(context, max(power - 10, -100))
                           : null,
                       color: Colors.red,
                     ),
@@ -172,19 +172,19 @@ class TrainControlWidget extends StatelessWidget {
                           trackHeight: 4,
                         ),
                         child: Slider(
-                          value: speed.toDouble(),
+                          value: power.toDouble(),
                           min: -100,
                           max: 100,
                           divisions: 10,
-                          label: '$speed%',
+                          label: '$power%',
                           onChanged: (value) => _updateSpeed(context, value.toInt()),
                         ),
                       ),
                     ),
                     SpeedButton(
                       icon: Icons.add,
-                      onPressed: speed < 100
-                          ? () => _updateSpeed(context, min(speed + 10, 100))
+                      onPressed: power < 100
+                          ? () => _updateSpeed(context, min(power + 10, 100))
                           : null,
                       color: Colors.green,
                     ),
@@ -197,23 +197,23 @@ class TrainControlWidget extends StatelessWidget {
                   children: [
                     Expanded(
                       child: ControlButton(
-                        icon: Icons.arrow_back_ios,
-                        onPressed: () => _updateSpeed(context, -50),
-                        color: speed < 0 ? Colors.yellow : Colors.grey.shade300,
+                        icon: Icons.keyboard_double_arrow_left,
+                        onPressed: () => _updateSpeed(context, power>=-80?power-20:-100),
+                        color: Colors.yellow,
                       ),
                     ),
                     const SizedBox(width: 8),
                     ControlButton(
                       icon: Icons.stop,
                       onPressed: isMoving ? () => _updateSpeed(context, 0) : null,
-                      color: speed != 0 ? Colors.red : Colors.grey.shade300,
+                      color: power != 0 ? Colors.red : Colors.grey.shade300,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: ControlButton(
-                        icon: Icons.arrow_forward_ios,
-                        onPressed: () => _updateSpeed(context, 50),
-                        color: speed > 0 ? Colors.yellow : Colors.grey.shade300,
+                        icon: Icons.keyboard_double_arrow_right,
+                        onPressed: () => _updateSpeed(context, power<=80?power+20:100),
+                        color: Colors.yellow,
                       ),
                     ),
                   ],
