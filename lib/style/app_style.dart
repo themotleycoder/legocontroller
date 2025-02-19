@@ -31,11 +31,35 @@ class AppStyle {
   static const Color textSecondary = Color(0xFF757575);     // Medium Gray for secondary text
   static const Color textDisabled = Color(0xFFBDBDBD);      // Light Gray for disabled text
 
+  /// Lego Colors
+  static const Color legoGreen = Color(0xFF00B04E);         // Lego Green
+  static const Color legoRed = Color(0xFFDD1A22);           // Lego Red
+  static const Color legoYellow = Color(0xFFFECD04);        // Lego Amber
+  static const Color legoBlue = Color(0xFF006CB7);          // Lego Blue
+
   /// Connection Status Colors
-  static const Color connected = Color(0xFF4CAF50);         // Green
-  static const Color disconnected = Color(0xFFF44336);      // Red
-  static const Color connecting = Color(0xFFFFC107);        // Amber
-  static const Color scanning = Color(0xFF2196F3);          // Blue
+  static const Color connected = Color(0xFF00B04E);         // Lego Green
+  static const Color disconnected = Color(0xFFDD1A22);      // Lego Red
+  static const Color connecting = Color(0xFFFECD04);        // Lego Amber
+  static const Color scanning = Color(0xFF006CB7);          // Lego Blue
+
+  /// Custom Colors
+  // Train Colors
+  static const Color trainActive = Color(0xFF00B04E);       // Bright Green for active train
+  static const Color trainInactive = Color(0xFF757575);     // Gray for inactive train
+  static const Color trainError = Color(0xFFDD1A22);        // Deep Red for train errors
+  static const Color trainWarning = Color(0xFFFECD04);      // Bright Yellow for warnings
+  
+  // Switch Colors
+  static const Color switchOn = Color(0xFF00B04E);          // Light Green for switch on state
+  static const Color switchOff = Color(0xFF616161);         // Dark Gray for switch off state
+  static const Color switchTransition = Color(0xFF29B6F6);  // Light Blue for transition state
+  
+  // Control Panel Colors
+  static const Color controlBackground = Color(0xFFF5F5F5); // Light Gray background
+  static const Color controlBorder = Color(0xFFE0E0E0);     // Border color for controls
+  static const Color controlHighlight = Color(0xFF42A5F5);  // Highlight color for active controls
+  static const Color controlDisabled = Color(0xFFBDBDBD);   // Color for disabled controls
 
   /// Spacing Constants
   static const double spacing_xs = 4.0;

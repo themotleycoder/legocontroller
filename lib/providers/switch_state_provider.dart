@@ -28,10 +28,8 @@ class SwitchStateProvider with ChangeNotifier {
   Future<void> _fetchSwitchStatus() async {
     try {
       final status = await _webService.getSwitchStatus();
-      if (_switchStatus != status) {
-        _switchStatus = status;
-        notifyListeners();
-      }
+      _switchStatus = status;
+      notifyListeners();
     } catch (e) {
       debugPrint('Error fetching switch status: $e');
     }
@@ -48,7 +46,11 @@ class SwitchStateProvider with ChangeNotifier {
         switchId: switchId,
         position: position,
       );
-      // Immediately fetch new status after control command
+      // Give the physical switch time to move before fetching new status
+      await Future.delayed(const Duration(milliseconds: 500));
+      await _fetchSwitchStatus();
+      // Fetch one more time after another delay to ensure we have the final position
+      await Future.delayed(const Duration(milliseconds: 500));
       await _fetchSwitchStatus();
     } catch (e) {
       debugPrint('Error controlling switch: $e');

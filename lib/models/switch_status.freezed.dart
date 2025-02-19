@@ -207,6 +207,8 @@ Switch _$SwitchFromJson(Map<String, dynamic> json) {
 mixin _$Switch {
   @JsonKey(name: 'switch_positions')
   Map<String, int> get switchPositions => throw _privateConstructorUsedError;
+  @JsonKey(name: 'switch_states')
+  Map<String, int> get switchStates => throw _privateConstructorUsedError;
   @JsonKey(name: 'last_update_seconds_ago', defaultValue: 0.0)
   double get lastUpdateSecondsAgo => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
@@ -233,6 +235,7 @@ abstract class $SwitchCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'switch_positions') Map<String, int> switchPositions,
+      @JsonKey(name: 'switch_states') Map<String, int> switchStates,
       @JsonKey(name: 'last_update_seconds_ago', defaultValue: 0.0)
       double lastUpdateSecondsAgo,
       String name,
@@ -259,6 +262,7 @@ class _$SwitchCopyWithImpl<$Res, $Val extends Switch>
   @override
   $Res call({
     Object? switchPositions = null,
+    Object? switchStates = null,
     Object? lastUpdateSecondsAgo = null,
     Object? name = null,
     Object? status = null,
@@ -270,6 +274,10 @@ class _$SwitchCopyWithImpl<$Res, $Val extends Switch>
       switchPositions: null == switchPositions
           ? _value.switchPositions
           : switchPositions // ignore: cast_nullable_to_non_nullable
+              as Map<String, int>,
+      switchStates: null == switchStates
+          ? _value.switchStates
+          : switchStates // ignore: cast_nullable_to_non_nullable
               as Map<String, int>,
       lastUpdateSecondsAgo: null == lastUpdateSecondsAgo
           ? _value.lastUpdateSecondsAgo
@@ -308,6 +316,7 @@ abstract class _$$SwitchImplCopyWith<$Res> implements $SwitchCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'switch_positions') Map<String, int> switchPositions,
+      @JsonKey(name: 'switch_states') Map<String, int> switchStates,
       @JsonKey(name: 'last_update_seconds_ago', defaultValue: 0.0)
       double lastUpdateSecondsAgo,
       String name,
@@ -332,6 +341,7 @@ class __$$SwitchImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? switchPositions = null,
+    Object? switchStates = null,
     Object? lastUpdateSecondsAgo = null,
     Object? name = null,
     Object? status = null,
@@ -343,6 +353,10 @@ class __$$SwitchImplCopyWithImpl<$Res>
       switchPositions: null == switchPositions
           ? _value._switchPositions
           : switchPositions // ignore: cast_nullable_to_non_nullable
+              as Map<String, int>,
+      switchStates: null == switchStates
+          ? _value._switchStates
+          : switchStates // ignore: cast_nullable_to_non_nullable
               as Map<String, int>,
       lastUpdateSecondsAgo: null == lastUpdateSecondsAgo
           ? _value.lastUpdateSecondsAgo
@@ -378,15 +392,18 @@ class _$SwitchImpl implements _Switch {
   const _$SwitchImpl(
       {@JsonKey(name: 'switch_positions')
       required final Map<String, int> switchPositions,
+      @JsonKey(name: 'switch_states')
+      required final Map<String, int> switchStates,
       @JsonKey(name: 'last_update_seconds_ago', defaultValue: 0.0)
       required this.lastUpdateSecondsAgo,
       required this.name,
       required this.status,
       required this.connected,
-      required this.active,
+      this.active = true,
       @JsonKey(name: 'port_connections')
       final Map<String, dynamic>? portConnections})
       : _switchPositions = switchPositions,
+        _switchStates = switchStates,
         _portConnections = portConnections;
 
   factory _$SwitchImpl.fromJson(Map<String, dynamic> json) =>
@@ -401,6 +418,15 @@ class _$SwitchImpl implements _Switch {
     return EqualUnmodifiableMapView(_switchPositions);
   }
 
+  final Map<String, int> _switchStates;
+  @override
+  @JsonKey(name: 'switch_states')
+  Map<String, int> get switchStates {
+    if (_switchStates is EqualUnmodifiableMapView) return _switchStates;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_switchStates);
+  }
+
   @override
   @JsonKey(name: 'last_update_seconds_ago', defaultValue: 0.0)
   final double lastUpdateSecondsAgo;
@@ -411,6 +437,7 @@ class _$SwitchImpl implements _Switch {
   @override
   final bool connected;
   @override
+  @JsonKey()
   final bool active;
   final Map<String, dynamic>? _portConnections;
   @override
@@ -425,7 +452,7 @@ class _$SwitchImpl implements _Switch {
 
   @override
   String toString() {
-    return 'Switch(switchPositions: $switchPositions, lastUpdateSecondsAgo: $lastUpdateSecondsAgo, name: $name, status: $status, connected: $connected, active: $active, portConnections: $portConnections)';
+    return 'Switch(switchPositions: $switchPositions, switchStates: $switchStates, lastUpdateSecondsAgo: $lastUpdateSecondsAgo, name: $name, status: $status, connected: $connected, active: $active, portConnections: $portConnections)';
   }
 
   @override
@@ -435,6 +462,8 @@ class _$SwitchImpl implements _Switch {
             other is _$SwitchImpl &&
             const DeepCollectionEquality()
                 .equals(other._switchPositions, _switchPositions) &&
+            const DeepCollectionEquality()
+                .equals(other._switchStates, _switchStates) &&
             (identical(other.lastUpdateSecondsAgo, lastUpdateSecondsAgo) ||
                 other.lastUpdateSecondsAgo == lastUpdateSecondsAgo) &&
             (identical(other.name, name) || other.name == name) &&
@@ -451,6 +480,7 @@ class _$SwitchImpl implements _Switch {
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_switchPositions),
+      const DeepCollectionEquality().hash(_switchStates),
       lastUpdateSecondsAgo,
       name,
       status,
@@ -478,12 +508,14 @@ abstract class _Switch implements Switch {
   const factory _Switch(
       {@JsonKey(name: 'switch_positions')
       required final Map<String, int> switchPositions,
+      @JsonKey(name: 'switch_states')
+      required final Map<String, int> switchStates,
       @JsonKey(name: 'last_update_seconds_ago', defaultValue: 0.0)
       required final double lastUpdateSecondsAgo,
       required final String name,
       required final int status,
       required final bool connected,
-      required final bool active,
+      final bool active,
       @JsonKey(name: 'port_connections')
       final Map<String, dynamic>? portConnections}) = _$SwitchImpl;
 
@@ -492,6 +524,9 @@ abstract class _Switch implements Switch {
   @override
   @JsonKey(name: 'switch_positions')
   Map<String, int> get switchPositions;
+  @override
+  @JsonKey(name: 'switch_states')
+  Map<String, int> get switchStates;
   @override
   @JsonKey(name: 'last_update_seconds_ago', defaultValue: 0.0)
   double get lastUpdateSecondsAgo;

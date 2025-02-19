@@ -22,11 +22,12 @@ class SwitchStatus with _$SwitchStatus {
 class Switch with _$Switch {
   const factory Switch({
     @JsonKey(name: 'switch_positions') required Map<String, int> switchPositions,
+    @JsonKey(name: 'switch_states') required Map<String, int> switchStates,
     @JsonKey(name: 'last_update_seconds_ago', defaultValue: 0.0) required double lastUpdateSecondsAgo,
     required String name,
     required int status,
     required bool connected,
-    required bool active,
+    @Default(true) bool active,
     @JsonKey(name: 'port_connections') Map<String, dynamic>? portConnections,
   }) = _Switch;
 
