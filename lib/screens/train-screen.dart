@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../widgets/train-control-widget.dart';
+import '../widgets/train_control_widget.dart';
 import '../models/train_status.dart';
 import '../providers/train_state_provider.dart';
 import '../models/train_command.dart';

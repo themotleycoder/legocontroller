@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:provider/provider.dart';
 import '../models/train_status.dart';
 import '../services/lego-webservice.dart';
-import '../models/train_command.dart';
 
 class TrainStateProvider with ChangeNotifier {
   final TrainWebService _webService;
@@ -14,6 +12,7 @@ class TrainStateProvider with ChangeNotifier {
   // Track speed and direction for each train
   final Map<String, int> _trainSpeeds = {};
   final Map<String, String> _trainDirections = {};
+  final Map<String, bool> _trainSelfDrives = {};
 
   TrainStateProvider(this._webService) {
     _startPolling();
@@ -71,7 +70,38 @@ class TrainStateProvider with ChangeNotifier {
       _trainDirections[trainId] = power == 0 ? "Stopped" :
                                power > 0 ? "Forward" : "Backward";
       
-      print('Updated train $trainId power to: $power');
+      if (kDebugMode) {
+        print('Updated train $trainId power to: $power');
+      }
+
+      // Immediately fetch new status after control command
+      await _fetchTrainStatus();
+    } catch (e) {
+      debugPrint('Error controlling train: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> selfDriveTrain({
+    required int hubId,
+    required bool selfDrive,
+  }) async {
+    try {
+      final trains = _trainStatus?.trains;
+      if (trains == null || trains.isEmpty) return;
+
+      await _webService.selfDriveTrain(
+        hubId: hubId,
+        selfDrive: selfDrive,
+      );
+
+      // Update speed and direction tracking
+      final trainId = hubId.toString();
+      _trainSelfDrives[trainId] = selfDrive;
+
+      if (kDebugMode) {
+        print('Updated train $trainId self drive to: $selfDrive');
+      }
 
       // Immediately fetch new status after control command
       await _fetchTrainStatus();

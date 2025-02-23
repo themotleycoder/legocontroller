@@ -38,13 +38,46 @@ class TrainWebService {
     }
   }
 
+  Future<void> selfDriveTrain({
+    required int hubId,
+    required bool selfDrive
+  }) async {
+    final url = Uri.parse('$baseUrl/selfdrive');
+
+    int selfDriveVal = 0;
+    if (selfDrive) {
+      selfDriveVal = 1;
+    }
+
+    try {
+      final payload = {
+        'hub_id': hubId,
+        'self_drive': selfDriveVal
+      };
+
+      final response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(payload)
+      );
+
+      if (response.statusCode != 200) {
+        throw TrainWebServiceException(
+            'Failed to switch self drive on train: ${response.body}'
+        );
+      }
+    } catch (e) {
+      throw TrainWebServiceException(
+          'Network error while controlling train: $e'
+      );
+    }
+  }
+
   Future<void> controlTrain({
     required int hubId,
     required int power
   }) async {
     final url = Uri.parse('$baseUrl/train');
-
-    // final commandStr = command.toString().split('.').last.toUpperCase();
 
     try {
       final payload = {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../widgets/switch-control-widget.dart';
+import '../widgets/switch_control_widget.dart';
 import '../providers/switch_state_provider.dart';
 
 class SwitchScreen extends StatefulWidget {
