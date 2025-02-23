@@ -1,9 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
 import '../providers/train_state_provider.dart';
 import '../widgets/buttons.dart';
-import '../models/train_command.dart';
 import '../models/train_status.dart';
 
 class TrainControlWidget extends StatelessWidget {
@@ -16,12 +16,6 @@ class TrainControlWidget extends StatelessWidget {
   });
 
   void _updateSpeed(BuildContext context, int speed) {
-    // final command = speed == 0
-    //         ? TrainCommand.stop
-    //         : speed > 0
-    //             ? TrainCommand.forward
-    //             : TrainCommand.backward;
-            
     context.read<TrainStateProvider>().controlTrain(
       hubId: int.parse(trainId),
       power: speed,
@@ -50,7 +44,9 @@ class TrainControlWidget extends StatelessWidget {
         final power = trainProvider.getTrainSpeed(trainId);
         final bool isMoving = power != 0;
         final String direction = train.direction;
-        print("power: $power");
+        if (kDebugMode) {
+          print("power: $power");
+        }
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
           elevation: 0,
