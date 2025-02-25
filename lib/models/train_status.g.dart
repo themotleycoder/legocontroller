@@ -25,6 +25,7 @@ _$TrainImpl _$$TrainImplFromJson(Map<String, dynamic> json) => _$TrainImpl(
       speed: (json['speed'] as num).toDouble(),
       direction: json['direction'] as String,
       name: json['name'] as String,
+      selfDrive: json['selfDrive'] as bool? ?? false,
       lastUpdateSecondsAgo: (json['last_update_seconds_ago'] as num).toDouble(),
       rssi: (json['rssi'] as num).toInt(),
     );
@@ -35,6 +36,7 @@ Map<String, dynamic> _$$TrainImplToJson(_$TrainImpl instance) =>
       'speed': instance.speed,
       'direction': instance.direction,
       'name': instance.name,
+      'selfDrive': instance.selfDrive,
       'last_update_seconds_ago': instance.lastUpdateSecondsAgo,
       'rssi': instance.rssi,
     };

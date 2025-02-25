@@ -208,6 +208,8 @@ mixin _$Train {
   double get speed => throw _privateConstructorUsedError;
   String get direction => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  @JsonKey(name: 'selfDrive', defaultValue: false)
+  bool get selfDrive => throw _privateConstructorUsedError;
   @JsonKey(name: 'last_update_seconds_ago')
   double get lastUpdateSecondsAgo => throw _privateConstructorUsedError;
   int get rssi => throw _privateConstructorUsedError;
@@ -231,6 +233,7 @@ abstract class $TrainCopyWith<$Res> {
       double speed,
       String direction,
       String name,
+      @JsonKey(name: 'selfDrive', defaultValue: false) bool selfDrive,
       @JsonKey(name: 'last_update_seconds_ago') double lastUpdateSecondsAgo,
       int rssi});
 }
@@ -254,6 +257,7 @@ class _$TrainCopyWithImpl<$Res, $Val extends Train>
     Object? speed = null,
     Object? direction = null,
     Object? name = null,
+    Object? selfDrive = null,
     Object? lastUpdateSecondsAgo = null,
     Object? rssi = null,
   }) {
@@ -274,6 +278,10 @@ class _$TrainCopyWithImpl<$Res, $Val extends Train>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      selfDrive: null == selfDrive
+          ? _value.selfDrive
+          : selfDrive // ignore: cast_nullable_to_non_nullable
+              as bool,
       lastUpdateSecondsAgo: null == lastUpdateSecondsAgo
           ? _value.lastUpdateSecondsAgo
           : lastUpdateSecondsAgo // ignore: cast_nullable_to_non_nullable
@@ -298,6 +306,7 @@ abstract class _$$TrainImplCopyWith<$Res> implements $TrainCopyWith<$Res> {
       double speed,
       String direction,
       String name,
+      @JsonKey(name: 'selfDrive', defaultValue: false) bool selfDrive,
       @JsonKey(name: 'last_update_seconds_ago') double lastUpdateSecondsAgo,
       int rssi});
 }
@@ -319,6 +328,7 @@ class __$$TrainImplCopyWithImpl<$Res>
     Object? speed = null,
     Object? direction = null,
     Object? name = null,
+    Object? selfDrive = null,
     Object? lastUpdateSecondsAgo = null,
     Object? rssi = null,
   }) {
@@ -339,6 +349,10 @@ class __$$TrainImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      selfDrive: null == selfDrive
+          ? _value.selfDrive
+          : selfDrive // ignore: cast_nullable_to_non_nullable
+              as bool,
       lastUpdateSecondsAgo: null == lastUpdateSecondsAgo
           ? _value.lastUpdateSecondsAgo
           : lastUpdateSecondsAgo // ignore: cast_nullable_to_non_nullable
@@ -359,6 +373,7 @@ class _$TrainImpl implements _Train {
       required this.speed,
       required this.direction,
       required this.name,
+      @JsonKey(name: 'selfDrive', defaultValue: false) required this.selfDrive,
       @JsonKey(name: 'last_update_seconds_ago')
       required this.lastUpdateSecondsAgo,
       required this.rssi});
@@ -375,6 +390,9 @@ class _$TrainImpl implements _Train {
   @override
   final String name;
   @override
+  @JsonKey(name: 'selfDrive', defaultValue: false)
+  final bool selfDrive;
+  @override
   @JsonKey(name: 'last_update_seconds_ago')
   final double lastUpdateSecondsAgo;
   @override
@@ -382,7 +400,7 @@ class _$TrainImpl implements _Train {
 
   @override
   String toString() {
-    return 'Train(status: $status, speed: $speed, direction: $direction, name: $name, lastUpdateSecondsAgo: $lastUpdateSecondsAgo, rssi: $rssi)';
+    return 'Train(status: $status, speed: $speed, direction: $direction, name: $name, selfDrive: $selfDrive, lastUpdateSecondsAgo: $lastUpdateSecondsAgo, rssi: $rssi)';
   }
 
   @override
@@ -395,6 +413,8 @@ class _$TrainImpl implements _Train {
             (identical(other.direction, direction) ||
                 other.direction == direction) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.selfDrive, selfDrive) ||
+                other.selfDrive == selfDrive) &&
             (identical(other.lastUpdateSecondsAgo, lastUpdateSecondsAgo) ||
                 other.lastUpdateSecondsAgo == lastUpdateSecondsAgo) &&
             (identical(other.rssi, rssi) || other.rssi == rssi));
@@ -402,8 +422,8 @@ class _$TrainImpl implements _Train {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, status, speed, direction, name, lastUpdateSecondsAgo, rssi);
+  int get hashCode => Object.hash(runtimeType, status, speed, direction, name,
+      selfDrive, lastUpdateSecondsAgo, rssi);
 
   /// Create a copy of Train
   /// with the given fields replaced by the non-null parameter values.
@@ -427,6 +447,8 @@ abstract class _Train implements Train {
       required final double speed,
       required final String direction,
       required final String name,
+      @JsonKey(name: 'selfDrive', defaultValue: false)
+      required final bool selfDrive,
       @JsonKey(name: 'last_update_seconds_ago')
       required final double lastUpdateSecondsAgo,
       required final int rssi}) = _$TrainImpl;
@@ -441,6 +463,9 @@ abstract class _Train implements Train {
   String get direction;
   @override
   String get name;
+  @override
+  @JsonKey(name: 'selfDrive', defaultValue: false)
+  bool get selfDrive;
   @override
   @JsonKey(name: 'last_update_seconds_ago')
   double get lastUpdateSecondsAgo;

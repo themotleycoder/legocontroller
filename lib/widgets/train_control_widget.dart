@@ -83,30 +83,46 @@ class TrainControlWidget extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+                    //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.green.withOpacity(0.1),
+                    //     borderRadius: BorderRadius.circular(16),
+                    //   ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.green,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
                           Text(
-                            train.status,
-                            style: const TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.w500,
+                            'Self Drive',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
                             ),
                           ),
+                          Switch(
+                            value: train.selfDrive,
+                            onChanged: (bool value) {
+                              context.read<TrainStateProvider>().selfDriveTrain(
+                                hubId: int.parse(trainId),
+                                selfDrive: value,
+                              );
+                            },
+                          ),
+                    //       Container(
+                    //         width: 8,
+                    //         height: 8,
+                    //         decoration: const BoxDecoration(
+                    //           shape: BoxShape.circle,
+                    //           color: Colors.green,
+                    //         ),
+                    //       ),
+                    //       const SizedBox(width: 8),
+                    //       Text(
+                    //         train.status,
+                    //         style: const TextStyle(
+                    //           color: Colors.green,
+                    //           fontWeight: FontWeight.w500,
+                    //         ),
+                    //       ),
                         ],
                       ),
                     ),

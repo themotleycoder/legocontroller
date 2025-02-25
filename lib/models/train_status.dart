@@ -21,6 +21,7 @@ class Train with _$Train {
     required double speed,
     required String direction,
     required String name,
+    @JsonKey(name: 'selfDrive', defaultValue: false) required bool selfDrive,
     @JsonKey(name: 'last_update_seconds_ago') required double lastUpdateSecondsAgo,
     required int rssi,
   }) = _Train;
