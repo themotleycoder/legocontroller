@@ -44,12 +44,37 @@ class _TrainScreenState extends State<TrainScreen> {
                 }
 
                 final trains = trainProvider.trainStatus!.trains;
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: trains.length,
-                  itemBuilder: (context, index) {
-                    final trainId = trains.keys.elementAt(index);
-                    return TrainControlWidget(trainId: trainId);
+                return OrientationBuilder(
+                  builder: (context, orientation) {
+                    final isLandscape = orientation == Orientation.landscape;
+                    
+                    if (isLandscape) {
+                      // Use GridView for landscape mode
+                      return GridView.builder(
+                        padding: const EdgeInsets.all(16),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1.2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                        ),
+                        itemCount: trains.length,
+                        itemBuilder: (context, index) {
+                          final trainId = trains.keys.elementAt(index);
+                          return TrainControlWidget(trainId: trainId);
+                        },
+                      );
+                    } else {
+                      // Use ListView for portrait mode
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: trains.length,
+                        itemBuilder: (context, index) {
+                          final trainId = trains.keys.elementAt(index);
+                          return TrainControlWidget(trainId: trainId);
+                        },
+                      );
+                    }
                   },
                 );
               },

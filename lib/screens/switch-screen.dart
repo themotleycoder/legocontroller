@@ -42,12 +42,37 @@ class _SwitchScreenState extends State<SwitchScreen> {
                 }
 
                 final switches = switchProvider.switchStatus!.switches;
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: switches.length,
-                  itemBuilder: (context, index) {
-                    final switchId = switches.keys.elementAt(index);
-                    return SwitchControlWidget(switchId: switchId);
+                return OrientationBuilder(
+                  builder: (context, orientation) {
+                    final isLandscape = orientation == Orientation.landscape;
+                    
+                    if (isLandscape) {
+                      // Use GridView for landscape mode
+                      return GridView.builder(
+                        padding: const EdgeInsets.all(16),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1.2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                        ),
+                        itemCount: switches.length,
+                        itemBuilder: (context, index) {
+                          final switchId = switches.keys.elementAt(index);
+                          return SwitchControlWidget(switchId: switchId);
+                        },
+                      );
+                    } else {
+                      // Use ListView for portrait mode
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: switches.length,
+                        itemBuilder: (context, index) {
+                          final switchId = switches.keys.elementAt(index);
+                          return SwitchControlWidget(switchId: switchId);
+                        },
+                      );
+                    }
                   },
                 );
               },

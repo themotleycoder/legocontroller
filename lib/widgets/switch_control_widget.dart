@@ -39,8 +39,10 @@ class _SwitchControlWidgetState extends State<SwitchControlWidget> {
   }
 
   void _stopListeningToUpdates() {
-    final provider = Provider.of<SwitchStateProvider>(context, listen: false);
-    provider.removeListener(_checkServerState);
+    if (mounted) {
+      final provider = Provider.of<SwitchStateProvider>(context, listen: false);
+      provider.removeListener(_checkServerState);
+    }
   }
 
   void _checkServerState() {
