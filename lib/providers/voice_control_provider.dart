@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../services/voice_control_service.dart';
 import '../services/voice_command_parser.dart';
@@ -18,6 +19,7 @@ class VoiceControlProvider extends ChangeNotifier {
   String _lastCommand = '';
   String _lastStatus = '';
   String? _lastError;
+  Timer? _statusClearTimer;
 
   bool get isInitialized => _isInitialized;
   bool get isListening => _isListening;
@@ -135,6 +137,9 @@ class VoiceControlProvider extends ChangeNotifier {
       _lastError = 'Error processing command: $e';
     }
     
+    // Start timer to clear status after 5 seconds
+    _startStatusClearTimer();
+    
     notifyListeners();
   }
 
@@ -248,8 +253,22 @@ class VoiceControlProvider extends ChangeNotifier {
     }
   }
 
+  void _startStatusClearTimer() {
+    // Cancel any existing timer
+    _statusClearTimer?.cancel();
+    
+    // Start new timer to clear status after 5 seconds
+    _statusClearTimer = Timer(const Duration(seconds: 5), () {
+      _lastCommand = '';
+      _lastStatus = '';
+      _lastError = null;
+      notifyListeners();
+    });
+  }
+
   @override
   void dispose() {
+    _statusClearTimer?.cancel();
     _voiceService.dispose();
     super.dispose();
   }
