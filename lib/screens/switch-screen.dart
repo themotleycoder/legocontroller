@@ -16,20 +16,7 @@ class _SwitchScreenState extends State<SwitchScreen> {
     final hasConnectedDevices = context.select<SwitchStateProvider, bool>(
       (provider) => (provider.switchStatus?.connectedSwitches ?? 0) > 0
     );
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Lego Train Controls'),
-        elevation: 2,
-        actions: [
-          if (hasConnectedDevices)
-            IconButton(
-              icon: const Icon(Icons.bluetooth_disabled),
-              tooltip: 'Disconnect All',
-              onPressed: () => _showDisconnectAllDialog(context),
-            ),
-        ],
-      ),
-      body: !hasConnectedDevices
+    return !hasConnectedDevices
           ? _buildNoDevicesMessage()
           : Consumer<SwitchStateProvider>(
               builder: (context, switchProvider, _) {
@@ -76,8 +63,7 @@ class _SwitchScreenState extends State<SwitchScreen> {
                   },
                 );
               },
-            ),
-    );
+            );
   }
 
 

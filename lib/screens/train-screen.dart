@@ -4,6 +4,7 @@ import '../widgets/train_control_widget.dart';
 import '../models/train_status.dart';
 import '../providers/train_state_provider.dart';
 import '../models/train_command.dart';
+import '../widgets/voice_control_widget.dart';
 
 class TrainScreen extends StatefulWidget {
   const TrainScreen({super.key});
@@ -18,20 +19,7 @@ class _TrainScreenState extends State<TrainScreen> {
     final hasConnectedDevices = context.select<TrainStateProvider, bool>(
       (provider) => (provider.trainStatus?.connectedTrains ?? 0) > 0
     );
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Lego Train Controls'),
-        elevation: 2,
-        actions: [
-          if (hasConnectedDevices)
-            IconButton(
-              icon: const Icon(Icons.bluetooth_disabled),
-              tooltip: 'Disconnect All',
-              onPressed: () => _showDisconnectAllDialog(context),
-            ),
-        ],
-      ),
-      body: !hasConnectedDevices
+    return !hasConnectedDevices
           ? _buildNoDevicesMessage()
           : Consumer<TrainStateProvider>(
               builder: (context, trainProvider, _) {
@@ -78,8 +66,7 @@ class _TrainScreenState extends State<TrainScreen> {
                   },
                 );
               },
-            ),
-    );
+            );
   }
 
 

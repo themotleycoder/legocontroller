@@ -5,6 +5,7 @@ import 'package:legocontroller/screens/home-screen.dart';
 import 'package:legocontroller/style/app_style.dart';
 import 'package:legocontroller/providers/train_state_provider.dart';
 import 'package:legocontroller/providers/switch_state_provider.dart';
+import 'package:legocontroller/providers/voice_control_provider.dart';
 import 'package:legocontroller/services/lego-webservice.dart';
 
 void main() {
@@ -32,6 +33,16 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => SwitchStateProvider(webService),
+        ),
+        ChangeNotifierProxyProvider2<TrainStateProvider, SwitchStateProvider, VoiceControlProvider>(
+          create: (_) => VoiceControlProvider(),
+          update: (_, trainProvider, switchProvider, voiceProvider) {
+            voiceProvider?.setProviders(
+              trainProvider: trainProvider,
+              switchProvider: switchProvider,
+            );
+            return voiceProvider ?? VoiceControlProvider();
+          },
         ),
       ],
       child: MaterialApp(

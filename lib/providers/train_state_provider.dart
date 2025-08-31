@@ -70,9 +70,6 @@ class TrainStateProvider with ChangeNotifier {
       _trainDirections[trainId] = power == 0 ? "Stopped" :
                                power > 0 ? "Forward" : "Backward";
       
-      if (kDebugMode) {
-        print('Updated train $trainId power to: $power');
-      }
 
       // Immediately fetch new status after control command
       await _fetchTrainStatus();
@@ -99,9 +96,6 @@ class TrainStateProvider with ChangeNotifier {
       final trainId = hubId.toString();
       _trainSelfDrives[trainId] = selfDrive;
 
-      if (kDebugMode) {
-        print('Updated train $trainId self drive to: $selfDrive');
-      }
 
       // Immediately fetch new status after control command
       await _fetchTrainStatus();
