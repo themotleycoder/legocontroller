@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'train-screen.dart';
 import 'switch-screen.dart';
-import '../providers/voice_control_provider.dart';
+// Voice control disabled
+// import '../providers/voice_control_provider.dart';
 import '../providers/train_state_provider.dart';
 import '../providers/switch_state_provider.dart';
-import '../widgets/voice_control_widget.dart';
+// import '../widgets/voice_control_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,10 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize voice control when the home screen loads
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<VoiceControlProvider>().initialize();
-    });
+    // Voice control disabled
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   context.read<VoiceControlProvider>().initialize();
+    // });
   }
 
   @override
@@ -59,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           _buildNavItem(1, Icons.call_split, 'Switches', isLandscape),
                           const Spacer(),
                           // Voice Control in sidebar for landscape
-                          const VoiceControlFAB(),
+                          // const VoiceControlFAB(),
                           const SizedBox(height: 16),
                         ],
                       ),
@@ -70,50 +71,50 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           _tabs[_currentIndex],
                           // Voice control status overlay
-                          Positioned(
-                            top: 16,
-                            left: 16,
-                            right: 16,
-                            child: Consumer<VoiceControlProvider>(
-                              builder: (context, voiceProvider, child) {
-                                if (!voiceProvider.isListening && 
-                                    voiceProvider.lastCommand.isEmpty && 
-                                    voiceProvider.lastError == null) {
-                                  return const SizedBox.shrink();
-                                }
-                                return Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        if (voiceProvider.isListening)
-                                          const Row(
-                                            children: [
-                                              SizedBox(
-                                                width: 16,
-                                                height: 16,
-                                                child: CircularProgressIndicator(strokeWidth: 2),
-                                              ),
-                                              SizedBox(width: 8),
-                                              Text('Listening for voice commands...'),
-                                            ],
-                                          ),
-                                        if (voiceProvider.lastCommand.isNotEmpty)
-                                          Text('Command: "${voiceProvider.lastCommand}"'),
-                                        if (voiceProvider.lastError != null)
-                                          Text('Error: ${voiceProvider.lastError}', 
-                                               style: const TextStyle(color: Colors.red)),
-                                        if (voiceProvider.lastError == null && voiceProvider.lastStatus.isNotEmpty)
-                                          Text('Status: ${voiceProvider.lastStatus}',
-                                               style: const TextStyle(color: Colors.green)),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
+                          // Positioned(
+                          //   top: 16,
+                          //   left: 16,
+                          //   right: 16,
+                          //   child: Consumer<VoiceControlProvider>(
+                          //     builder: (context, voiceProvider, child) {
+                          //       if (!voiceProvider.isListening &&
+                          //           voiceProvider.lastCommand.isEmpty &&
+                          //           voiceProvider.lastError == null) {
+                          //         return const SizedBox.shrink();
+                          //       }
+                          //       return Card(
+                          //         child: Padding(
+                          //           padding: const EdgeInsets.all(12),
+                          //           child: Column(
+                          //             crossAxisAlignment: CrossAxisAlignment.start,
+                          //             children: [
+                          //               if (voiceProvider.isListening)
+                          //                 const Row(
+                          //                   children: [
+                          //                     SizedBox(
+                          //                       width: 16,
+                          //                       height: 16,
+                          //                       child: CircularProgressIndicator(strokeWidth: 2),
+                          //                     ),
+                          //                     SizedBox(width: 8),
+                          //                     Text('Listening for voice commands...'),
+                          //                   ],
+                          //                 ),
+                          //               if (voiceProvider.lastCommand.isNotEmpty)
+                          //                 Text('Command: "${voiceProvider.lastCommand}"'),
+                          //               if (voiceProvider.lastError != null)
+                          //                 Text('Error: ${voiceProvider.lastError}',
+                          //                      style: const TextStyle(color: Colors.red)),
+                          //               if (voiceProvider.lastError == null && voiceProvider.lastStatus.isNotEmpty)
+                          //                 Text('Status: ${voiceProvider.lastStatus}',
+                          //                      style: const TextStyle(color: Colors.green)),
+                          //             ],
+                          //           ),
+                          //         ),
+                          //       );
+                          //     },
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),
@@ -123,50 +124,50 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     _tabs[_currentIndex],
                     // Voice control status overlay for portrait
-                    Positioned(
-                      top: 16,
-                      left: 16,
-                      right: 16,
-                      child: Consumer<VoiceControlProvider>(
-                        builder: (context, voiceProvider, child) {
-                          if (!voiceProvider.isListening && 
-                              voiceProvider.lastCommand.isEmpty && 
-                              voiceProvider.lastError == null) {
-                            return const SizedBox.shrink();
-                          }
-                          return Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (voiceProvider.isListening)
-                                    const Row(
-                                      children: [
-                                        SizedBox(
-                                          width: 16,
-                                          height: 16,
-                                          child: CircularProgressIndicator(strokeWidth: 2),
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text('Listening for voice commands...'),
-                                      ],
-                                    ),
-                                  if (voiceProvider.lastCommand.isNotEmpty)
-                                    Text('Command: "${voiceProvider.lastCommand}"'),
-                                  if (voiceProvider.lastError != null)
-                                    Text('Error: ${voiceProvider.lastError}', 
-                                         style: const TextStyle(color: Colors.red)),
-                                  if (voiceProvider.lastError == null && voiceProvider.lastStatus.isNotEmpty)
-                                    Text('Status: ${voiceProvider.lastStatus}',
-                                         style: const TextStyle(color: Colors.green)),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                    // Positioned(
+                    //   top: 16,
+                    //   left: 16,
+                    //   right: 16,
+                    //   child: Consumer<VoiceControlProvider>(
+                    //     builder: (context, voiceProvider, child) {
+                    //       if (!voiceProvider.isListening &&
+                    //           voiceProvider.lastCommand.isEmpty &&
+                    //           voiceProvider.lastError == null) {
+                    //         return const SizedBox.shrink();
+                    //       }
+                    //       return Card(
+                    //         child: Padding(
+                    //           padding: const EdgeInsets.all(12),
+                    //           child: Column(
+                    //             crossAxisAlignment: CrossAxisAlignment.start,
+                    //             children: [
+                    //               if (voiceProvider.isListening)
+                    //                 const Row(
+                    //                   children: [
+                    //                     SizedBox(
+                    //                       width: 16,
+                    //                       height: 16,
+                    //                       child: CircularProgressIndicator(strokeWidth: 2),
+                    //                     ),
+                    //                     SizedBox(width: 8),
+                    //                     Text('Listening for voice commands...'),
+                    //                   ],
+                    //                 ),
+                    //               if (voiceProvider.lastCommand.isNotEmpty)
+                    //                 Text('Command: "${voiceProvider.lastCommand}"'),
+                    //               if (voiceProvider.lastError != null)
+                    //                 Text('Error: ${voiceProvider.lastError}',
+                    //                      style: const TextStyle(color: Colors.red)),
+                    //               if (voiceProvider.lastError == null && voiceProvider.lastStatus.isNotEmpty)
+                    //                 Text('Status: ${voiceProvider.lastStatus}',
+                    //                      style: const TextStyle(color: Colors.green)),
+                    //             ],
+                    //           ),
+                    //         ),
+                    //       );
+                    //     },
+                    //   ),
+                    // ),
                   ],
                 ),
           bottomNavigationBar: isLandscape 
@@ -189,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-          floatingActionButton: isLandscape ? null : const VoiceControlFAB(),
+          // floatingActionButton: isLandscape ? null : const VoiceControlFAB(),
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         );
       },
@@ -251,15 +252,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     tooltip: 'Disconnect All Trains',
                     onPressed: () => _showTrainDisconnectAllDialog(context),
                   ),
-                IconButton(
-                  icon: const Icon(Icons.help_outline),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => const VoiceControlHelpDialog(),
-                    );
-                  },
-                ),
+                // Voice control help disabled
+                // IconButton(
+                //   icon: const Icon(Icons.help_outline),
+                //   onPressed: () {
+                //     showDialog(
+                //       context: context,
+                //       builder: (context) => const VoiceControlHelpDialog(),
+                //     );
+                //   },
+                // ),
               ],
             );
           },
@@ -280,15 +282,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     tooltip: 'Disconnect All Switches',
                     onPressed: () => _showSwitchDisconnectAllDialog(context),
                   ),
-                IconButton(
-                  icon: const Icon(Icons.help_outline),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => const VoiceControlHelpDialog(),
-                    );
-                  },
-                ),
+                // Voice control help disabled
+                // IconButton(
+                //   icon: const Icon(Icons.help_outline),
+                //   onPressed: () {
+                //     showDialog(
+                //       context: context,
+                //       builder: (context) => const VoiceControlHelpDialog(),
+                //     );
+                //   },
+                // ),
               ],
             );
           },

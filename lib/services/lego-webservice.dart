@@ -28,6 +28,7 @@ class TrainWebService {
   factory TrainWebService() => _instance;
 
   String baseUrl;
+  static const Duration _requestTimeout = Duration(seconds: 5);
 
   TrainWebService._internal() : baseUrl = 'http://192.168.86.39:8000';
 
@@ -59,7 +60,7 @@ class TrainWebService {
           url,
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(payload)
-      );
+      ).timeout(_requestTimeout);
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
@@ -89,7 +90,7 @@ class TrainWebService {
           url,
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(payload)
-      );
+      ).timeout(_requestTimeout);
       
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
@@ -140,7 +141,7 @@ class TrainWebService {
     final url = Uri.parse('$baseUrl/reset');
 
     try {
-      final response = await http.post(url);
+      final response = await http.post(url).timeout(_requestTimeout);
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
@@ -158,7 +159,7 @@ class TrainWebService {
     final url = Uri.parse('$baseUrl/connected/trains');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(_requestTimeout);
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
@@ -200,7 +201,7 @@ class TrainWebService {
     final url = Uri.parse('$baseUrl/connected/switches');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(_requestTimeout);
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
@@ -249,7 +250,7 @@ class TrainWebService {
     final url = Uri.parse('$baseUrl/connected/switches');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(_requestTimeout);
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
