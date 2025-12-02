@@ -69,7 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     Expanded(
                       child: Stack(
                         children: [
-                          _tabs[_currentIndex],
+                          IndexedStack(
+                            index: _currentIndex,
+                            children: _tabs,
+                          ),
                           // Voice control status overlay
                           // Positioned(
                           //   top: 16,
@@ -122,7 +125,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               : Stack(
                   children: [
-                    _tabs[_currentIndex],
+                    IndexedStack(
+                      index: _currentIndex,
+                      children: _tabs,
+                    ),
                     // Voice control status overlay for portrait
                     // Positioned(
                     //   top: 16,
