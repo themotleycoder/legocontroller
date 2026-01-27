@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Flutter mobile application for controlling LEGO Powered Up train hubs and switch hubs via Bluetooth LE. The app communicates with a backend web service (Python server at `http://192.168.86.39:8000`) that handles the actual Bluetooth connections to LEGO devices. Features include manual train/switch control, voice commands, and self-driving trains.
+Flutter mobile application for controlling LEGO Powered Up train hubs and switch hubs via Bluetooth LE. The app communicates with a backend web service (Python server, URL configured via environment variables) that handles the actual Bluetooth connections to LEGO devices. Features include manual train/switch control and self-driving trains.
 
 ## Common Commands
 
@@ -52,12 +52,11 @@ flutter test --coverage
 ## Architecture
 
 ### State Management
-Uses Provider pattern with three main providers:
-- `TrainStateProvider`: Manages connected trains, polls backend every second for status updates, tracks speed/direction locally
-- `SwitchStateProvider`: Manages connected switches, polls backend for switch positions
-- `VoiceControlProvider`: Coordinates voice commands, depends on both train and switch providers
+Uses Provider pattern with two main providers:
+- `TrainStateProvider`: Manages connected trains, polls backend for status updates, tracks speed/direction locally, includes error state
+- `SwitchStateProvider`: Manages connected switches, polls backend for switch positions, includes error state
 
-All providers are configured in `main.dart` using `MultiProvider`. VoiceControlProvider uses `ChangeNotifierProxyProvider2` to access train and switch providers.
+All providers are configured in `main.dart` using `MultiProvider`.
 
 ### Backend Communication
 `TrainWebService` (singleton) handles all HTTP communication with the Python backend:
@@ -67,20 +66,15 @@ All providers are configured in `main.dart` using `MultiProvider`. VoiceControlP
 - **Status polling**: GET `/connected/trains` and `/connected/switches`
 - **Disconnect**: POST to `/reset` to reset all Bluetooth connections
 
-The backend URL is hardcoded to `192.168.86.39:8000` but can be configured via `configure()` method.
+The backend URL is configured via environment variables (`.env` file). The service loads configuration on initialization using `flutter_dotenv`.
 
-### Voice Control System
-Three-layer architecture:
-1. `VoiceControlService`: Low-level speech-to-text using `speech_to_text` package, handles microphone permissions, produces command streams
-2. `VoiceCommandParser`: Stateless parser that converts natural language to structured commands. Dynamically maps train names from backend metadata (e.g., "red train", "passenger train"). Supports relative speed adjustments ("faster", "slower") by tracking current train state.
-3. `VoiceControlProvider`: High-level coordinator that listens to service streams and executes parsed commands via train/switch providers
+### Environment Configuration
+Configuration is managed via `.env` file:
+- `BACKEND_URL`: Backend server URL (default: `http://192.168.86.39:8000`)
+- `REQUEST_TIMEOUT_SECONDS`: HTTP request timeout in seconds (default: 5)
+- `POLL_INTERVAL_SECONDS`: Status polling interval in seconds (default: 1)
 
-Voice commands support:
-- Train control: "train [id/name] forward/backward [speed]"
-- Relative speed: "train [id/name] faster/slower" (adjusts current speed by ±10)
-- Switch control: "switch [id] straight/diverging/left/right"
-- Self-drive: "self drive train [id] on/off"
-- Emergency stop: "stop all/everything"
+The `.env` file is loaded in `main.dart` before the app initializes. All providers and services read from `dotenv.env`.
 
 ### Data Models
 Uses freezed for immutable models with JSON serialization:
@@ -91,18 +85,17 @@ Uses freezed for immutable models with JSON serialization:
 
 ### UI Structure
 - `HomeScreen`: Tab navigation (trains/switches), orientation-aware layout (landscape uses sidebar, portrait uses bottom nav)
-- `TrainScreen`: Grid of connected trains with speed sliders and direction controls
-- `SwitchScreen`: Grid of connected switches with position buttons
-- Voice control FAB available on both screens, shows listening state overlay
+- `TrainScreen`: Grid of connected trains with speed sliders and direction controls, error display for connection issues
+- `SwitchScreen`: Grid of connected switches with position buttons, error display for connection issues
 
 ### Platform-Specific Notes
-- **iOS**: Uses CocoaPods for dependencies, requires microphone permission in Info.plist
-- **Android**: Requires microphone and Bluetooth permissions in AndroidManifest.xml
-- **Orientation**: Supports landscape and portrait, app enforces landscape/portrait in `main.dart` via `SystemChrome.setPreferredOrientations`
+- **iOS**: Uses CocoaPods for dependencies, requires Bluetooth permissions in Info.plist, minimum iOS 15.0
+- **Android**: Requires Bluetooth permissions in AndroidManifest.xml
+- **Orientation**: Supports landscape and portrait, app enforces orientations in `main.dart` via `SystemChrome.setPreferredOrientations`
 - **Local dependency**: Uses local `universal_ble` package from `../universal_ble` (not pub.dev version)
 
 ### Key Patterns
-- Polling interval: 1 second for train/switch status
+- Polling interval: Configurable via environment variable (default 1 second)
 - Provider updates: Call `notifyListeners()` only when state changes to avoid unnecessary rebuilds
-- Error handling: Services throw custom exceptions (`TrainWebServiceException`), UI shows snackbars
-- Voice confidence threshold: 0.5 minimum confidence for command recognition
+- Error handling: Services throw custom exceptions (`TrainWebServiceException`), providers track error state, UI displays error views with retry buttons
+- Environment configuration: All configuration via `.env` file loaded at app startup

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:legocontroller/screens/home-screen.dart';
 import 'package:legocontroller/style/app_style.dart';
 import 'package:legocontroller/providers/train_state_provider.dart';
 import 'package:legocontroller/providers/switch_state_provider.dart';
-// Voice control disabled due to stability issues
-// import 'package:legocontroller/providers/voice_control_provider.dart';
 import 'package:legocontroller/services/lego-webservice.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables
+  await dotenv.load(fileName: ".env");
 
   // Set preferred orientations for both landscape and portrait
   SystemChrome.setPreferredOrientations([
@@ -38,18 +40,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => SwitchStateProvider(webService),
         ),
-        // Voice control disabled due to stability issues
-        // ChangeNotifierProxyProvider2<TrainStateProvider, SwitchStateProvider, VoiceControlProvider>(
-        //   create: (context) => VoiceControlProvider(),
-        //   update: (context, trainProvider, switchProvider, previous) {
-        //     final provider = previous ?? VoiceControlProvider();
-        //     provider.setProviders(
-        //       trainProvider: trainProvider,
-        //       switchProvider: switchProvider,
-        //     );
-        //     return provider;
-        //   },
-        // ),
       ],
       child: MaterialApp(
         title: 'LEGO Train Controller',

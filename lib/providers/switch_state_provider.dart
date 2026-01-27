@@ -1,21 +1,26 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/switch_status.dart';
 import '../services/lego-webservice.dart';
 
 class SwitchStateProvider with ChangeNotifier {
   final TrainWebService _webService;
   SwitchStatus? _switchStatus;
+  String? _error;
   Timer? _pollTimer;
-  static const _pollInterval = Duration(seconds: 1);
+  late final Duration _pollInterval;
 
   SwitchStateProvider(this._webService) {
+    _pollInterval = Duration(
+      seconds: int.tryParse(dotenv.env['POLL_INTERVAL_SECONDS'] ?? '1') ?? 1,
+    );
     _startPolling();
   }
 
   SwitchStatus? get switchStatus => _switchStatus;
-  bool get isLoading => _switchStatus == null;
+  String? get error => _error;
+  bool get isLoading => _switchStatus == null && _error == null;
 
   void _startPolling() {
     // Initial fetch
@@ -28,10 +33,13 @@ class SwitchStateProvider with ChangeNotifier {
   Future<void> _fetchSwitchStatus() async {
     try {
       final status = await _webService.getSwitchStatus();
+      _error = null; // Clear error on success
       _switchStatus = status;
       notifyListeners();
     } catch (e) {
+      _error = e.toString();
       debugPrint('Error fetching switch status: $e');
+      notifyListeners();
     }
   }
 
@@ -53,7 +61,9 @@ class SwitchStateProvider with ChangeNotifier {
       await Future.delayed(const Duration(milliseconds: 500));
       await _fetchSwitchStatus();
     } catch (e) {
+      _error = e.toString();
       debugPrint('Error controlling switch: $e');
+      notifyListeners();
       rethrow;
     }
   }
@@ -63,7 +73,9 @@ class SwitchStateProvider with ChangeNotifier {
       await _webService.disconnectAllSwitches();
       await _fetchSwitchStatus();
     } catch (e) {
+      _error = e.toString();
       debugPrint('Error disconnecting all switches: $e');
+      notifyListeners();
       rethrow;
     }
   }

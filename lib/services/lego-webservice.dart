@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/train_status.dart';
-import '../models/train_command.dart';
 import '../models/switch_status.dart';
 
 class TrainWebServiceException implements Exception {
@@ -28,9 +28,13 @@ class TrainWebService {
   factory TrainWebService() => _instance;
 
   String baseUrl;
-  static const Duration _requestTimeout = Duration(seconds: 5);
+  Duration _requestTimeout;
 
-  TrainWebService._internal() : baseUrl = 'http://192.168.86.39:8000';
+  TrainWebService._internal()
+      : baseUrl = dotenv.env['BACKEND_URL'] ?? 'http://192.168.86.39:8000',
+        _requestTimeout = Duration(
+          seconds: int.tryParse(dotenv.env['REQUEST_TIMEOUT_SECONDS'] ?? '5') ?? 5,
+        );
 
   // Allow custom base URL for different environments
   void configure({String? customBaseUrl}) {

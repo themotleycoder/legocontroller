@@ -24,6 +24,11 @@ class _SwitchScreenState extends State<SwitchScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
+                // Show error if present
+                if (switchProvider.error != null) {
+                  return _buildErrorView(switchProvider.error!);
+                }
+
                 if (switchProvider.switchStatus == null) {
                   return const Center(child: Text('No switch status available'));
                 }
@@ -66,35 +71,41 @@ class _SwitchScreenState extends State<SwitchScreen> {
             );
   }
 
-
-  Future<void> _showDisconnectAllDialog(BuildContext context) {
-    final switchProvider = context.read<SwitchStateProvider>();
-    
-    return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Disconnect All Switches?'),
-        content: const Text(
-          'Are you sure you want to disconnect all switches?\n\n'
-              'This will reset all switch positions.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+  Widget _buildErrorView(String error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 64,
+            color: Colors.red[400],
           ),
-          ElevatedButton(
-            onPressed: () async {
-              await switchProvider.disconnectAll();
-              if (mounted) {
-                Navigator.pop(context);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+          const SizedBox(height: 16),
+          Text(
+            'Connection Error',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: Colors.red[700],
             ),
-            child: const Text('Disconnect All'),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              error.replaceAll('TrainWebServiceException: ', ''),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[700],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () {
+              context.read<SwitchStateProvider>();
+            },
+            icon: const Icon(Icons.refresh),
+            label: const Text('Retry'),
           ),
         ],
       ),

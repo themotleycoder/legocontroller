@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/train_control_widget.dart';
-import '../models/train_status.dart';
 import '../providers/train_state_provider.dart';
-import '../models/train_command.dart';
-import '../widgets/voice_control_widget.dart';
 
 class TrainScreen extends StatefulWidget {
   const TrainScreen({super.key});
@@ -25,6 +22,11 @@ class _TrainScreenState extends State<TrainScreen> {
               builder: (context, trainProvider, _) {
                 if (trainProvider.isLoading) {
                   return const Center(child: CircularProgressIndicator());
+                }
+
+                // Show error if present
+                if (trainProvider.error != null) {
+                  return _buildErrorView(trainProvider.error!);
                 }
 
                 if (trainProvider.trainStatus == null) {
@@ -69,71 +71,41 @@ class _TrainScreenState extends State<TrainScreen> {
             );
   }
 
-
-  Future<void> _showDisconnectDialog(BuildContext context, String trainId) {
-    final trainProvider = context.read<TrainStateProvider>();
-    final train = trainProvider.trainStatus?.trains[trainId];
-    if (train == null) return Future.value();
-    
-    return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Disconnect Train?'),
-        content: Text(
-          'Are you sure you want to disconnect ${train.name}?\n\n'
-              'The train will stop if currently in motion.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+  Widget _buildErrorView(String error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 64,
+            color: Colors.red[400],
           ),
-          ElevatedButton(
-            onPressed: () async {
-              await trainProvider.disconnect(trainId);
-              if (mounted) {
-                Navigator.pop(context);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+          const SizedBox(height: 16),
+          Text(
+            'Connection Error',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: Colors.red[700],
             ),
-            child: const Text('Disconnect'),
           ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _showDisconnectAllDialog(BuildContext context) {
-    final trainProvider = context.read<TrainStateProvider>();
-    
-    return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Disconnect All Trains?'),
-        content: const Text(
-          'Are you sure you want to disconnect all trains?\n\n'
-              'All trains will stop if currently in motion.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await trainProvider.disconnectAll();
-              if (mounted) {
-                Navigator.pop(context);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              error.replaceAll('TrainWebServiceException: ', ''),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[700],
+              ),
+              textAlign: TextAlign.center,
             ),
-            child: const Text('Disconnect All'),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () {
+              context.read<TrainStateProvider>();
+            },
+            icon: const Icon(Icons.refresh),
+            label: const Text('Retry'),
           ),
         ],
       ),

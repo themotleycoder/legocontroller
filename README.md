@@ -1,12 +1,11 @@
 # LEGO Controller
 
-A Flutter mobile application for controlling LEGO Powered Up train hubs and switch hubs via Bluetooth LE. The app provides manual control, voice commands, and self-driving capabilities for LEGO trains.
+A Flutter mobile application for controlling LEGO Powered Up train hubs and switch hubs via Bluetooth LE. The app provides manual control and self-driving capabilities for LEGO trains.
 
 ## Features
 
 - **Train Control**: Manual control of LEGO train speed and direction
 - **Switch Control**: Control track switches for route selection
-- **Voice Commands**: Hands-free control using natural language voice commands
 - **Self-Drive Mode**: Automated train operation
 - **Real-time Status**: Live monitoring of connected devices, speed, direction, and signal strength
 - **Multi-Device Support**: Control multiple trains and switches simultaneously
@@ -17,7 +16,7 @@ A Flutter mobile application for controlling LEGO Powered Up train hubs and swit
 ### Software
 - Flutter SDK 3.5.4 or higher
 - Dart SDK (included with Flutter)
-- iOS 13.0+ or Android (for deployment)
+- iOS 15.0+ or Android (for deployment)
 - Xcode 14+ (for iOS development, macOS only)
 - CocoaPods (for iOS dependencies)
 
@@ -45,12 +44,14 @@ pod install
 cd ..
 ```
 
-### 3. Configure Backend URL
-The backend URL is configured in `lib/services/lego-webservice.dart`:
-```dart
-TrainWebService._internal() : baseUrl = 'http://192.168.86.39:8000';
+### 3. Configure Environment Variables
+Create a `.env` file in the project root (use `.env.example` as template):
+```bash
+BACKEND_URL=http://192.168.86.39:8000
+REQUEST_TIMEOUT_SECONDS=5
+POLL_INTERVAL_SECONDS=1
 ```
-Update this URL to match your backend server's IP address.
+Update `BACKEND_URL` to match your backend server's IP address.
 
 ## Building
 
@@ -64,8 +65,8 @@ flutter run
 ```
 
 **iOS Requirements:**
-- Minimum deployment target: iOS 13.0
-- Permissions required: Microphone, Speech Recognition, Bluetooth
+- Minimum deployment target: iOS 15.0
+- Permissions required: Bluetooth
 - HTTP exception configured for local backend server
 
 ### Android
@@ -106,10 +107,9 @@ flutter pub run flutter_launcher_icons
 ## Architecture
 
 ### State Management
-- **Provider pattern** with three main providers:
+- **Provider pattern** with two main providers:
   - `TrainStateProvider`: Manages train connections, polls backend every second
   - `SwitchStateProvider`: Manages switch connections and positions
-  - `VoiceControlProvider`: Coordinates voice commands
 
 ### Backend Communication
 - REST API communication via `TrainWebService` singleton
@@ -121,32 +121,22 @@ flutter pub run flutter_launcher_icons
   - `GET /connected/switches` - Get switch status
   - `POST /reset` - Reset Bluetooth connections
 
-### Voice Control
-Three-layer architecture:
-1. **VoiceControlService**: Speech-to-text using `speech_to_text` package
-2. **VoiceCommandParser**: Natural language processing for commands
-3. **VoiceControlProvider**: Command execution coordinator
-
-**Supported Voice Commands:**
-- `"train [id/name] forward/backward [speed]"` - Control train
-- `"train [id/name] faster/slower"` - Adjust speed
-- `"switch [id] straight/diverging/left/right"` - Control switch
-- `"self drive train [id] on/off"` - Toggle self-drive
-- `"stop all/everything"` - Emergency stop
-
 ## Configuration
+
+### Environment Variables
+The app uses environment variables configured in `.env` file:
+- `BACKEND_URL`: Backend server URL (default: `http://192.168.86.39:8000`)
+- `REQUEST_TIMEOUT_SECONDS`: HTTP request timeout (default: 5)
+- `POLL_INTERVAL_SECONDS`: Status polling interval (default: 1)
 
 ### iOS Permissions
 Configured in `ios/Runner/Info.plist`:
-- **NSMicrophoneUsageDescription**: Voice commands
-- **NSSpeechRecognitionUsageDescription**: Voice recognition
 - **NSBluetoothAlwaysUsageDescription**: LEGO hub communication
-- **NSAppTransportSecurity**: HTTP exception for local backend
+- **NSBluetoothPeripheralUsageDescription**: LEGO hub communication
 
 ### iOS Deployment Target
-- Minimum: iOS 13.0
-- Platform set in `ios/Podfile`: `platform :ios, '13.0'`
-- All pod dependencies enforce minimum iOS 13.0
+- Minimum: iOS 15.0
+- Platform set in `ios/Podfile`: `platform :ios, '15.0'`
 
 ## Troubleshooting
 
@@ -171,11 +161,6 @@ cd ..
 flutter build ios
 ```
 
-### Voice Control Not Working
-1. Check microphone permissions in iOS Settings
-2. Ensure speech recognition permission granted
-3. Check console logs for speech-to-text errors
-
 ### Bluetooth Connection Issues
 - Verify LEGO hubs are powered on
 - Check backend server logs
@@ -192,16 +177,13 @@ lib/
 │   └── train_command.dart
 ├── providers/                         # State management
 │   ├── train_state_provider.dart
-│   ├── switch_state_provider.dart
-│   └── voice_control_provider.dart
+│   └── switch_state_provider.dart
 ├── screens/                           # UI screens
 │   ├── home-screen.dart
 │   ├── train-screen.dart
 │   └── switch-screen.dart
 ├── services/                          # Business logic
-│   ├── lego-webservice.dart
-│   ├── voice_control_service.dart
-│   └── voice_command_parser.dart
+│   └── lego-webservice.dart
 ├── widgets/                           # Reusable UI components
 └── style/                             # App styling
 
@@ -216,10 +198,9 @@ assets/                                # Images and resources
 - `flutter`: SDK
 - `provider`: State management
 - `universal_ble`: Bluetooth Low Energy (local package)
-- `speech_to_text`: Voice recognition
-- `permission_handler`: Runtime permissions
 - `http`: HTTP client for backend API
 - `google_fonts`: Typography
+- `flutter_dotenv`: Environment variable management
 - `freezed`: Code generation for models
 - `json_serializable`: JSON serialization
 
@@ -233,12 +214,12 @@ assets/                                # Images and resources
 - The app uses a **local** `universal_ble` package from `../universal_ble`
 - Backend server must be running for the app to function
 - Train names are dynamically loaded from backend metadata
-- Voice commands support relative speed adjustments
-- All state updates use polling (1-second interval)
+- All state updates use polling (configurable interval, default 1 second)
+- Configuration is managed via `.env` file for easy environment switching
 
 ## License
 
-[Add your license here]
+MIT License - see [LICENSE](LICENSE) file for details
 
 ## Contributing
 

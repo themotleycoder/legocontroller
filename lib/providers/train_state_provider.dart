@@ -1,20 +1,25 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/train_status.dart';
 import '../services/lego-webservice.dart';
 
 class TrainStateProvider with ChangeNotifier {
   final TrainWebService _webService;
   TrainStatus? _trainStatus;
+  String? _error;
   Timer? _pollTimer;
-  static const _pollInterval = Duration(seconds: 1);
-  
+  late final Duration _pollInterval;
+
   // Track speed and direction for each train
   final Map<String, int> _trainSpeeds = {};
   final Map<String, String> _trainDirections = {};
   final Map<String, bool> _trainSelfDrives = {};
 
   TrainStateProvider(this._webService) {
+    _pollInterval = Duration(
+      seconds: int.tryParse(dotenv.env['POLL_INTERVAL_SECONDS'] ?? '1') ?? 1,
+    );
     _startPolling();
   }
 
@@ -29,7 +34,8 @@ class TrainStateProvider with ChangeNotifier {
   }
 
   TrainStatus? get trainStatus => _trainStatus;
-  bool get isLoading => _trainStatus == null;
+  String? get error => _error;
+  bool get isLoading => _trainStatus == null && _error == null;
 
   void _startPolling() {
     // Initial fetch
@@ -42,12 +48,15 @@ class TrainStateProvider with ChangeNotifier {
   Future<void> _fetchTrainStatus() async {
     try {
       final status = await _webService.getConnectedTrains();
+      _error = null; // Clear error on success
       if (_trainStatus != status) {
         _trainStatus = status;
         notifyListeners();
       }
     } catch (e) {
+      _error = e.toString();
       debugPrint('Error fetching train status: $e');
+      notifyListeners();
     }
   }
 
@@ -74,7 +83,9 @@ class TrainStateProvider with ChangeNotifier {
       // Immediately fetch new status after control command
       await _fetchTrainStatus();
     } catch (e) {
+      _error = e.toString();
       debugPrint('Error controlling train: $e');
+      notifyListeners();
       rethrow;
     }
   }
@@ -100,7 +111,9 @@ class TrainStateProvider with ChangeNotifier {
       // Immediately fetch new status after control command
       await _fetchTrainStatus();
     } catch (e) {
+      _error = e.toString();
       debugPrint('Error controlling train: $e');
+      notifyListeners();
       rethrow;
     }
   }
@@ -121,7 +134,9 @@ class TrainStateProvider with ChangeNotifier {
       // Update status
       await _fetchTrainStatus();
     } catch (e) {
+      _error = e.toString();
       debugPrint('Error disconnecting train: $e');
+      notifyListeners();
       rethrow;
     }
   }
@@ -145,7 +160,9 @@ class TrainStateProvider with ChangeNotifier {
       // Update status
       await _fetchTrainStatus();
     } catch (e) {
+      _error = e.toString();
       debugPrint('Error disconnecting all trains: $e');
+      notifyListeners();
       rethrow;
     }
   }
