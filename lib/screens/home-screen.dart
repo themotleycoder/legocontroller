@@ -4,6 +4,8 @@ import 'train-screen.dart';
 import 'switch-screen.dart';
 import '../providers/train_state_provider.dart';
 import '../providers/switch_state_provider.dart';
+import '../services/settings_service.dart';
+import '../widgets/settings_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -133,49 +135,77 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Widget> _buildAppBarActions() {
-    if (_currentIndex == 0) {
-      // Train screen actions
-      return [
+    return [
+      // Settings icon with connection status indicator (always visible)
+      Consumer2<TrainStateProvider, SwitchStateProvider>(
+        builder: (context, trainProvider, switchProvider, _) {
+          final hasError =
+              trainProvider.error != null || switchProvider.error != null;
+
+          return Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: () => _showSettingsDialog(context),
+                tooltip: 'Server Settings',
+              ),
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: hasError ? Colors.red : Colors.green,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+      // Tab-specific actions
+      if (_currentIndex == 0)
         Consumer<TrainStateProvider>(
           builder: (context, trainProvider, _) {
             final hasConnectedDevices =
                 (trainProvider.trainStatus?.connectedTrains ?? 0) > 0;
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (hasConnectedDevices)
-                  IconButton(
-                    icon: const Icon(Icons.bluetooth_disabled),
-                    tooltip: 'Disconnect All Trains',
-                    onPressed: () => _showTrainDisconnectAllDialog(context),
-                  ),
-              ],
-            );
+            if (hasConnectedDevices) {
+              return IconButton(
+                icon: const Icon(Icons.bluetooth_disabled),
+                tooltip: 'Disconnect All Trains',
+                onPressed: () => _showTrainDisconnectAllDialog(context),
+              );
+            }
+            return const SizedBox.shrink();
           },
-        ),
-      ];
-    } else {
-      // Switch screen actions
-      return [
+        )
+      else
         Consumer<SwitchStateProvider>(
           builder: (context, switchProvider, _) {
             final hasConnectedDevices =
                 (switchProvider.switchStatus?.connectedSwitches ?? 0) > 0;
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (hasConnectedDevices)
-                  IconButton(
-                    icon: const Icon(Icons.bluetooth_disabled),
-                    tooltip: 'Disconnect All Switches',
-                    onPressed: () => _showSwitchDisconnectAllDialog(context),
-                  ),
-              ],
-            );
+            if (hasConnectedDevices) {
+              return IconButton(
+                icon: const Icon(Icons.bluetooth_disabled),
+                tooltip: 'Disconnect All Switches',
+                onPressed: () => _showSwitchDisconnectAllDialog(context),
+              );
+            }
+            return const SizedBox.shrink();
           },
         ),
-      ];
-    }
+    ];
+  }
+
+  void _showSettingsDialog(BuildContext context) {
+    final settingsService = context.read<SettingsService>();
+    showDialog(
+      context: context,
+      builder: (context) => SettingsDialog(settingsService: settingsService),
+    );
   }
 
   Future<void> _showTrainDisconnectAllDialog(BuildContext context) {

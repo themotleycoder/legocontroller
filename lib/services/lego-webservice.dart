@@ -28,20 +28,39 @@ class TrainWebService {
   factory TrainWebService() => _instance;
 
   String baseUrl;
+  String? _apiKey;
   Duration _requestTimeout;
 
   TrainWebService._internal()
     : baseUrl = dotenv.env['BACKEND_URL'] ?? 'http://192.168.86.39:8000',
+      _apiKey = dotenv.env['API_KEY'],
       _requestTimeout = Duration(
         seconds:
             int.tryParse(dotenv.env['REQUEST_TIMEOUT_SECONDS'] ?? '5') ?? 5,
       );
 
   // Allow custom base URL for different environments
-  void configure({String? customBaseUrl}) {
+  void configure({String? customBaseUrl, String? apiKey}) {
     if (customBaseUrl != null) {
       baseUrl = customBaseUrl;
     }
+    if (apiKey != null) {
+      _apiKey = apiKey;
+    }
+  }
+
+  /// Get HTTP headers with authentication
+  Map<String, String> _getHeaders() {
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+
+    // Add API key header if configured
+    if (_apiKey != null && _apiKey!.isNotEmpty) {
+      headers['X-API-Key'] = _apiKey!;
+    }
+
+    return headers;
   }
 
   Future<void> selfDriveTrain({
@@ -61,7 +80,7 @@ class TrainWebService {
       final response = await http
           .post(
             url,
-            headers: {'Content-Type': 'application/json'},
+            headers: _getHeaders(),
             body: jsonEncode(payload),
           )
           .timeout(_requestTimeout);
@@ -87,7 +106,7 @@ class TrainWebService {
       final response = await http
           .post(
             url,
-            headers: {'Content-Type': 'application/json'},
+            headers: _getHeaders(),
             body: jsonEncode(payload),
           )
           .timeout(_requestTimeout);
@@ -120,7 +139,7 @@ class TrainWebService {
     try {
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: _getHeaders(),
         body: jsonEncode({
           'hub_id': hubId,
           'switch': switchName,
@@ -144,7 +163,9 @@ class TrainWebService {
     final url = Uri.parse('$baseUrl/reset');
 
     try {
-      final response = await http.post(url).timeout(_requestTimeout);
+      final response = await http
+          .post(url, headers: _getHeaders())
+          .timeout(_requestTimeout);
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
@@ -162,7 +183,9 @@ class TrainWebService {
     final url = Uri.parse('$baseUrl/connected/trains');
 
     try {
-      final response = await http.get(url).timeout(_requestTimeout);
+      final response = await http
+          .get(url, headers: _getHeaders())
+          .timeout(_requestTimeout);
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
@@ -204,7 +227,9 @@ class TrainWebService {
     final url = Uri.parse('$baseUrl/connected/switches');
 
     try {
-      final response = await http.get(url).timeout(_requestTimeout);
+      final response = await http
+          .get(url, headers: _getHeaders())
+          .timeout(_requestTimeout);
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
@@ -249,11 +274,56 @@ class TrainWebService {
     );
   }
 
+  /// Test connection to a server without modifying singleton configuration
+  ///
+  /// Uses a shorter timeout (3 seconds) for testing purposes.
+  /// Throws [TrainWebServiceException] on connection failure.
+  static Future<ConnectionStatus> testConnection({
+    required String baseUrl,
+    String? apiKey,
+    Duration timeout = const Duration(seconds: 3),
+  }) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (apiKey?.isNotEmpty ?? false) {
+      headers['X-API-Key'] = apiKey!;
+    }
+
+    final trainUrl = Uri.parse('$baseUrl/connected/trains');
+    final switchUrl = Uri.parse('$baseUrl/connected/switches');
+
+    try {
+      final trainResponse =
+          await http.get(trainUrl, headers: headers).timeout(timeout);
+      final switchResponse =
+          await http.get(switchUrl, headers: headers).timeout(timeout);
+
+      if (trainResponse.statusCode != 200 || switchResponse.statusCode != 200) {
+        throw TrainWebServiceException(
+          'Server returned error status: ${trainResponse.statusCode}',
+        );
+      }
+
+      final trainData = jsonDecode(trainResponse.body) as Map<String, dynamic>;
+      final switchData =
+          jsonDecode(switchResponse.body) as Map<String, dynamic>;
+
+      return ConnectionStatus(
+        connectedTrains: trainData['connected_trains'] as int,
+        connectedSwitches: switchData['connected_switches'] as int,
+      );
+    } catch (e) {
+      if (e is TrainWebServiceException) rethrow;
+      throw TrainWebServiceException('Connection failed: $e');
+    }
+  }
+
   Future<SwitchStatus> getSwitchStatus() async {
     final url = Uri.parse('$baseUrl/connected/switches');
 
     try {
-      final response = await http.get(url).timeout(_requestTimeout);
+      final response = await http
+          .get(url, headers: _getHeaders())
+          .timeout(_requestTimeout);
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(

@@ -3,6 +3,9 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - universal_ble (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -10,6 +13,7 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - universal_ble (from `.symlinks/plugins/universal_ble/darwin`)
 
 EXTERNAL SOURCES:
@@ -17,12 +21,15 @@ EXTERNAL SOURCES:
     :path: Flutter
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   universal_ble:
     :path: ".symlinks/plugins/universal_ble/darwin"
 
 SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  shared_preferences_foundation: 5086985c1d43c5ba4d5e69a4e8083a389e2909e6
   universal_ble: cf52a7b3fd2e7c14d6d7262e9fdadb72ab6b88a6
 
 PODFILE CHECKSUM: ab075c954191c43c3bb37df306f4ac4d6baf917f

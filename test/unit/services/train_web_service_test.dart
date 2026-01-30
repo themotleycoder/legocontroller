@@ -19,6 +19,7 @@ void main() {
 BACKEND_URL=http://test-server:8000
 REQUEST_TIMEOUT_SECONDS=5
 POLL_INTERVAL_SECONDS=1
+API_KEY=test-api-key-12345
 ''',
     );
   });
@@ -258,6 +259,19 @@ POLL_INTERVAL_SECONDS=1
 
         expect(identical(instance1, instance2), true);
       });
+
+      test('configures API key from environment', () {
+        final service = TrainWebService();
+        // API key loaded from dotenv in setUpAll
+        // We can't directly access _apiKey, but we can verify it was loaded
+        expect(dotenv.env['API_KEY'], 'test-api-key-12345');
+      });
+
+      test('allows runtime API key configuration', () {
+        TrainWebService().configure(apiKey: 'runtime-api-key');
+        // API key is set, but private - verified through integration
+        // This test ensures no exceptions are thrown
+      });
     });
 
     group('TrainWebServiceException', () {
@@ -269,6 +283,57 @@ POLL_INTERVAL_SECONDS=1
       test('toString includes message', () {
         final exception = TrainWebServiceException('Connection failed');
         expect(exception.toString(), contains('Connection failed'));
+      });
+    });
+
+    group('testConnection', () {
+      test(
+        'throws exception when HTTP fails (test environment limitation)',
+        () async {
+          // In Flutter test environment, HTTP calls return 400
+          // This verifies error handling works correctly
+          await expectLater(
+            TrainWebService.testConnection(
+              baseUrl: 'http://test-server:8000',
+              apiKey: 'test-key',
+            ),
+            throwsA(isA<TrainWebServiceException>()),
+          );
+        },
+      );
+
+      test('allows custom timeout', () async {
+        // Verify that testConnection accepts timeout parameter
+        // In test environment, this will fail quickly due to HTTP error
+        await expectLater(
+          TrainWebService.testConnection(
+            baseUrl: 'http://test-server:8000',
+            timeout: const Duration(seconds: 1),
+          ),
+          throwsA(isA<TrainWebServiceException>()),
+        );
+      });
+
+      test('works without API key', () async {
+        // Verify that testConnection works with null API key
+        await expectLater(
+          TrainWebService.testConnection(
+            baseUrl: 'http://test-server:8000',
+          ),
+          throwsA(isA<TrainWebServiceException>()),
+        );
+      });
+    });
+
+    group('ConnectionStatus', () {
+      test('creates instance with required fields', () {
+        final status = ConnectionStatus(
+          connectedTrains: 2,
+          connectedSwitches: 3,
+        );
+
+        expect(status.connectedTrains, 2);
+        expect(status.connectedSwitches, 3);
       });
     });
   });

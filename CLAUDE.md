@@ -66,15 +66,20 @@ All providers are configured in `main.dart` using `MultiProvider`.
 - **Status polling**: GET `/connected/trains` and `/connected/switches`
 - **Disconnect**: POST to `/reset` to reset all Bluetooth connections
 
-The backend URL is configured via environment variables (`.env` file). The service loads configuration on initialization using `flutter_dotenv`.
+The backend URL and authentication are configured via environment variables (`.env` file). The service loads configuration on initialization using `flutter_dotenv`.
+
+**Authentication**: All HTTP requests include an `X-API-Key` header when `API_KEY` is configured in `.env`. The implementation is backward compatible - requests work without the API key if the backend doesn't require authentication.
 
 ### Environment Configuration
 Configuration is managed via `.env` file:
 - `BACKEND_URL`: Backend server URL (default: `http://192.168.86.39:8000`)
+- `API_KEY`: API key for backend authentication (optional, no default)
 - `REQUEST_TIMEOUT_SECONDS`: HTTP request timeout in seconds (default: 5)
 - `POLL_INTERVAL_SECONDS`: Status polling interval in seconds (default: 1)
 
 The `.env` file is loaded in `main.dart` before the app initializes. All providers and services read from `dotenv.env`.
+
+**Note**: Use `.env.example` as a template. Copy it to `.env` and configure your backend URL and API key. The `.env` file is gitignored to prevent committing sensitive credentials.
 
 ### Data Models
 Uses freezed for immutable models with JSON serialization:

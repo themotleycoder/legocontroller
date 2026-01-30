@@ -23,8 +23,8 @@ class SwitchStateProvider with ChangeNotifier {
   bool get isLoading => _switchStatus == null && _error == null;
 
   void _startPolling() {
-    // Initial fetch
-    _fetchSwitchStatus();
+    // Defer initial fetch to avoid blocking UI during app startup
+    Future.microtask(() => _fetchSwitchStatus());
 
     // Set up periodic polling
     _pollTimer = Timer.periodic(_pollInterval, (_) => _fetchSwitchStatus());

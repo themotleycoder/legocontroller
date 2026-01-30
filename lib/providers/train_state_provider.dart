@@ -38,8 +38,8 @@ class TrainStateProvider with ChangeNotifier {
   bool get isLoading => _trainStatus == null && _error == null;
 
   void _startPolling() {
-    // Initial fetch
-    _fetchTrainStatus();
+    // Defer initial fetch to avoid blocking UI during app startup
+    Future.microtask(() => _fetchTrainStatus());
 
     // Set up periodic polling
     _pollTimer = Timer.periodic(_pollInterval, (_) => _fetchTrainStatus());
