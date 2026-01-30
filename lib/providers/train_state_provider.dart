@@ -25,7 +25,7 @@ class TrainStateProvider with ChangeNotifier {
 
   // Get current speed for a train
   int getTrainSpeed(String trainId) => _trainSpeeds[trainId] ?? 0;
-  
+
   // Get current direction for a train
   String getTrainDirection(String trainId) {
     final speed = getTrainSpeed(trainId);
@@ -40,7 +40,7 @@ class TrainStateProvider with ChangeNotifier {
   void _startPolling() {
     // Initial fetch
     _fetchTrainStatus();
-    
+
     // Set up periodic polling
     _pollTimer = Timer.periodic(_pollInterval, (_) => _fetchTrainStatus());
   }
@@ -67,18 +67,17 @@ class TrainStateProvider with ChangeNotifier {
     try {
       final trains = _trainStatus?.trains;
       if (trains == null || trains.isEmpty) return;
-      
-      await _webService.controlTrain(
-        hubId: hubId,
-        power: power,
-      );
+
+      await _webService.controlTrain(hubId: hubId, power: power);
 
       // Update speed and direction tracking
       final trainId = hubId.toString();
       _trainSpeeds[trainId] = power;
-      _trainDirections[trainId] = power == 0 ? "Stopped" :
-                               power > 0 ? "Forward" : "Backward";
-      
+      _trainDirections[trainId] = power == 0
+          ? "Stopped"
+          : power > 0
+          ? "Forward"
+          : "Backward";
 
       // Immediately fetch new status after control command
       await _fetchTrainStatus();
@@ -98,15 +97,11 @@ class TrainStateProvider with ChangeNotifier {
       final trains = _trainStatus?.trains;
       if (trains == null || trains.isEmpty) return;
 
-      await _webService.selfDriveTrain(
-        hubId: hubId,
-        selfDrive: selfDrive,
-      );
+      await _webService.selfDriveTrain(hubId: hubId, selfDrive: selfDrive);
 
       // Update speed and direction tracking
       final trainId = hubId.toString();
       _trainSelfDrives[trainId] = selfDrive;
-
 
       // Immediately fetch new status after control command
       await _fetchTrainStatus();
@@ -123,14 +118,14 @@ class TrainStateProvider with ChangeNotifier {
       // Stop the train first
       _trainSpeeds[trainId] = 0;
       _trainDirections[trainId] = "Stopped";
-      
+
       // Send stop command through web service
       await _webService.controlTrain(
         hubId: int.parse(trainId),
         power: 0,
         // command: TrainCommand.stop,
       );
-      
+
       // Update status
       await _fetchTrainStatus();
     } catch (e) {
@@ -149,14 +144,14 @@ class TrainStateProvider with ChangeNotifier {
         _trainSpeeds[trainId] = 0;
         _trainDirections[trainId] = "Stopped";
       }
-      
+
       // Reset bluetooth through web service
       await _webService.resetBluetooth();
-      
+
       // Clear speed and direction tracking
       _trainSpeeds.clear();
       _trainDirections.clear();
-      
+
       // Update status
       await _fetchTrainStatus();
     } catch (e) {

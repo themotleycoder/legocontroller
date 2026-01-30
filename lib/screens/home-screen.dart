@@ -15,10 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _tabs = [
-    const TrainScreen(),
-    const SwitchScreen(),
-  ];
+  final List<Widget> _tabs = [const TrainScreen(), const SwitchScreen()];
 
   @override
   void initState() {
@@ -30,15 +27,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return OrientationBuilder(
       builder: (context, orientation) {
         final isLandscape = orientation == Orientation.landscape;
-        
+
         return Scaffold(
           appBar: AppBar(
-            title: Text(_currentIndex == 0 ? 'Train Controls' : 'Switch Controls'),
+            title: Text(
+              _currentIndex == 0 ? 'Train Controls' : 'Switch Controls',
+            ),
             iconTheme: const IconThemeData(color: Colors.white),
             actionsIconTheme: const IconThemeData(color: Colors.white),
             actions: _buildAppBarActions(),
           ),
-          body: isLandscape 
+          body: isLandscape
               ? Row(
                   children: [
                     // Compact side navigation for landscape
@@ -50,7 +49,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(height: 16),
                           _buildNavItem(0, Icons.train, 'Trains', isLandscape),
                           const SizedBox(height: 8),
-                          _buildNavItem(1, Icons.call_split, 'Switches', isLandscape),
+                          _buildNavItem(
+                            1,
+                            Icons.call_split,
+                            'Switches',
+                            isLandscape,
+                          ),
                           const Spacer(),
                           const SizedBox(height: 16),
                         ],
@@ -65,12 +69,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 )
-              : IndexedStack(
-                  index: _currentIndex,
-                  children: _tabs,
-                ),
-          bottomNavigationBar: isLandscape 
-              ? null 
+              : IndexedStack(index: _currentIndex, children: _tabs),
+          bottomNavigationBar: isLandscape
+              ? null
               : NavigationBar(
                   selectedIndex: _currentIndex,
                   onDestinationSelected: (index) {
@@ -94,7 +95,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label, bool isLandscape) {
+  Widget _buildNavItem(
+    int index,
+    IconData icon,
+    String label,
+    bool isLandscape,
+  ) {
     final isSelected = _currentIndex == index;
     return InkWell(
       onTap: () {
@@ -106,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
         width: 64,
         height: 64,
         decoration: BoxDecoration(
-          color: isSelected 
+          color: isSelected
               ? Theme.of(context).colorScheme.primaryContainer
               : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
@@ -114,18 +120,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 24,
-            ),
+            Icon(icon, color: Colors.white, size: 24),
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 10,
-                color: Colors.white,
-              ),
+              style: const TextStyle(fontSize: 10, color: Colors.white),
             ),
           ],
         ),
@@ -139,7 +138,8 @@ class _HomeScreenState extends State<HomeScreen> {
       return [
         Consumer<TrainStateProvider>(
           builder: (context, trainProvider, _) {
-            final hasConnectedDevices = (trainProvider.trainStatus?.connectedTrains ?? 0) > 0;
+            final hasConnectedDevices =
+                (trainProvider.trainStatus?.connectedTrains ?? 0) > 0;
             return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -159,7 +159,8 @@ class _HomeScreenState extends State<HomeScreen> {
       return [
         Consumer<SwitchStateProvider>(
           builder: (context, switchProvider, _) {
-            final hasConnectedDevices = (switchProvider.switchStatus?.connectedSwitches ?? 0) > 0;
+            final hasConnectedDevices =
+                (switchProvider.switchStatus?.connectedSwitches ?? 0) > 0;
             return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -179,14 +180,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _showTrainDisconnectAllDialog(BuildContext context) {
     final trainProvider = context.read<TrainStateProvider>();
-    
+
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Disconnect All Trains?'),
         content: const Text(
           'Are you sure you want to disconnect all trains?\n\n'
-              'All trains will stop if currently in motion.',
+          'All trains will stop if currently in motion.',
         ),
         actions: [
           TextButton(
@@ -213,14 +214,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _showSwitchDisconnectAllDialog(BuildContext context) {
     final switchProvider = context.read<SwitchStateProvider>();
-    
+
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Disconnect All Switches?'),
         content: const Text(
           'Are you sure you want to disconnect all switches?\n\n'
-              'This will reset all switch positions.',
+          'This will reset all switch positions.',
         ),
         actions: [
           TextButton(

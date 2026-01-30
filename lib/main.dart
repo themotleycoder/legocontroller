@@ -34,12 +34,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         // Core state providers
-        ChangeNotifierProvider(
-          create: (_) => TrainStateProvider(webService),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => SwitchStateProvider(webService),
-        ),
+        ChangeNotifierProvider(create: (_) => TrainStateProvider(webService)),
+        ChangeNotifierProvider(create: (_) => SwitchStateProvider(webService)),
       ],
       child: MaterialApp(
         title: 'LEGO Train Controller',

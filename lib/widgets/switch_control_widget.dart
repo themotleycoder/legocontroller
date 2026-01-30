@@ -7,10 +7,7 @@ import '../models/switch_status.dart' as switch_model;
 class SwitchControlWidget extends StatefulWidget {
   final String switchId;
 
-  const SwitchControlWidget({
-    super.key,
-    required this.switchId,
-  });
+  const SwitchControlWidget({super.key, required this.switchId});
 
   @override
   State<SwitchControlWidget> createState() => _SwitchControlWidgetState();
@@ -54,23 +51,30 @@ class _SwitchControlWidgetState extends State<SwitchControlWidget> {
       setState(() {
         // Remove entries where server state matches expected state
         _expectedPositions.removeWhere((switchId, expectedValue) {
-          return switchData.switchPositions[switchId] == (expectedValue ? 1 : 0);
+          return switchData.switchPositions[switchId] ==
+              (expectedValue ? 1 : 0);
         });
       });
     }
   }
 
-  void _handleSwitchControl(String switchId, switch_model.SwitchPosition position) async {
+  void _handleSwitchControl(
+    String switchId,
+    switch_model.SwitchPosition position,
+  ) async {
     final newValue = position == switch_model.SwitchPosition.DIVERGING;
-    
+
     // Set expected position
     setState(() {
       _expectedPositions[switchId] = newValue;
       loadingSwitch = switchId;
     });
-    
+
     try {
-      await Provider.of<SwitchStateProvider>(context, listen: false).controlSwitch(
+      await Provider.of<SwitchStateProvider>(
+        context,
+        listen: false,
+      ).controlSwitch(
         hubId: int.parse(widget.switchId),
         switchId: switchId,
         position: position,
@@ -92,7 +96,6 @@ class _SwitchControlWidgetState extends State<SwitchControlWidget> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Consumer<SwitchStateProvider>(
@@ -101,7 +104,8 @@ class _SwitchControlWidgetState extends State<SwitchControlWidget> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final currentSwitch = switchProvider.switchStatus!.switches[widget.switchId];
+        final currentSwitch =
+            switchProvider.switchStatus!.switches[widget.switchId];
         if (currentSwitch == null) {
           return const SizedBox.shrink();
         }
@@ -146,9 +150,14 @@ class _SwitchControlWidgetState extends State<SwitchControlWidget> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
-                            color: switchData.connected ? AppStyle.legoGreen.withOpacity(0.1) : AppStyle.legoRed.withOpacity(0.1),
+                            color: switchData.connected
+                                ? AppStyle.legoGreen.withOpacity(0.1)
+                                : AppStyle.legoRed.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
@@ -159,14 +168,20 @@ class _SwitchControlWidgetState extends State<SwitchControlWidget> {
                                 height: 8,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: switchData.connected ? AppStyle.legoGreen : AppStyle.legoRed,
+                                  color: switchData.connected
+                                      ? AppStyle.legoGreen
+                                      : AppStyle.legoRed,
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                switchData.connected ? 'Connected' : 'Disconnected',
+                                switchData.connected
+                                    ? 'Connected'
+                                    : 'Disconnected',
                                 style: TextStyle(
-                                  color: switchData.connected ? AppStyle.legoGreen : AppStyle.legoRed,
+                                  color: switchData.connected
+                                      ? AppStyle.legoGreen
+                                      : AppStyle.legoRed,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -175,9 +190,14 @@ class _SwitchControlWidgetState extends State<SwitchControlWidget> {
                         ),
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
-                            color: switchData.active ? Colors.blue.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                            color: switchData.active
+                                ? Colors.blue.withOpacity(0.1)
+                                : Colors.grey.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
@@ -188,14 +208,18 @@ class _SwitchControlWidgetState extends State<SwitchControlWidget> {
                                 height: 8,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: switchData.active ? Colors.blue : Colors.grey,
+                                  color: switchData.active
+                                      ? Colors.blue
+                                      : Colors.grey,
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Text(
                                 switchData.active ? 'Active' : 'Inactive',
                                 style: TextStyle(
-                                  color: switchData.active ? Colors.blue : Colors.grey,
+                                  color: switchData.active
+                                      ? Colors.blue
+                                      : Colors.grey,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -213,7 +237,9 @@ class _SwitchControlWidgetState extends State<SwitchControlWidget> {
                   children: ['A', 'B', 'C', 'D'].map((switchLetter) {
                     final currentSwitchId = "SWITCH_$switchLetter";
                     // Only show switches that have a position set and are connected
-                    if (!switchData.switchPositions.containsKey(currentSwitchId) || 
+                    if (!switchData.switchPositions.containsKey(
+                          currentSwitchId,
+                        ) ||
                         switchData.switchStates[currentSwitchId] != 1) {
                       return const SizedBox.shrink();
                     }
@@ -244,7 +270,9 @@ class _SwitchControlWidgetState extends State<SwitchControlWidget> {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
                                 child: Stack(
                                   alignment: Alignment.center,
                                   children: [
@@ -252,50 +280,93 @@ class _SwitchControlWidgetState extends State<SwitchControlWidget> {
                                       data: Theme.of(context).copyWith(
                                         useMaterial3: true,
                                         switchTheme: SwitchThemeData(
-                                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          materialTapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
                                           splashRadius: 24.0,
-                                          thumbColor: WidgetStateProperty.resolveWith((states) {
-                                            if (states.contains(WidgetState.selected)) {
-                                              return AppStyle.legoBlue;
-                                            }
-                                            return AppStyle.legoYellow;
-                                          }),
-                                          trackColor: WidgetStateProperty.resolveWith((states) {
-                                            if (states.contains(WidgetState.selected)) {
-                                              return AppStyle.legoBlue.withOpacity(0.5);
-                                            }
-                                            return AppStyle.legoYellow.withOpacity(0.5);
-                                          }),
-                                          trackOutlineColor: WidgetStateProperty.resolveWith((states) {
-                                            if (states.contains(WidgetState.selected)) {
-                                              return AppStyle.legoBlue;
-                                            }
-                                            return AppStyle.legoYellow;
-                                          }),
-                                          overlayColor: WidgetStateProperty.resolveWith((states) {
-                                            final isSelected = states.contains(WidgetState.selected);
-                                            final color = isSelected ? AppStyle.legoBlue : AppStyle.legoGreen;
-                                            
-                                            if (states.contains(WidgetState.pressed)) {
-                                              return color.withOpacity(0.2);
-                                            }
-                                            if (states.contains(WidgetState.focused) || 
-                                                states.contains(WidgetState.hovered)) {
-                                              return color.withOpacity(0.12);
-                                            }
-                                            return Colors.transparent;
-                                          }),
+                                          thumbColor:
+                                              WidgetStateProperty.resolveWith((
+                                                states,
+                                              ) {
+                                                if (states.contains(
+                                                  WidgetState.selected,
+                                                )) {
+                                                  return AppStyle.legoBlue;
+                                                }
+                                                return AppStyle.legoYellow;
+                                              }),
+                                          trackColor:
+                                              WidgetStateProperty.resolveWith((
+                                                states,
+                                              ) {
+                                                if (states.contains(
+                                                  WidgetState.selected,
+                                                )) {
+                                                  return AppStyle.legoBlue
+                                                      .withOpacity(0.5);
+                                                }
+                                                return AppStyle.legoYellow
+                                                    .withOpacity(0.5);
+                                              }),
+                                          trackOutlineColor:
+                                              WidgetStateProperty.resolveWith((
+                                                states,
+                                              ) {
+                                                if (states.contains(
+                                                  WidgetState.selected,
+                                                )) {
+                                                  return AppStyle.legoBlue;
+                                                }
+                                                return AppStyle.legoYellow;
+                                              }),
+                                          overlayColor:
+                                              WidgetStateProperty.resolveWith((
+                                                states,
+                                              ) {
+                                                final isSelected = states
+                                                    .contains(
+                                                      WidgetState.selected,
+                                                    );
+                                                final color = isSelected
+                                                    ? AppStyle.legoBlue
+                                                    : AppStyle.legoGreen;
+
+                                                if (states.contains(
+                                                  WidgetState.pressed,
+                                                )) {
+                                                  return color.withOpacity(0.2);
+                                                }
+                                                if (states.contains(
+                                                      WidgetState.focused,
+                                                    ) ||
+                                                    states.contains(
+                                                      WidgetState.hovered,
+                                                    )) {
+                                                  return color.withOpacity(
+                                                    0.12,
+                                                  );
+                                                }
+                                                return Colors.transparent;
+                                              }),
                                         ),
                                       ),
                                       child: Switch(
-                                      value: _expectedPositions[currentSwitchId] ?? 
-                                             (switchData.switchPositions[currentSwitchId] == 1),
-                                      onChanged: (bool value) {
-                                        _handleSwitchControl(
-                                          currentSwitchId,
-                                          value ? switch_model.SwitchPosition.DIVERGING : switch_model.SwitchPosition.STRAIGHT,
-                                        );
-                                      },
+                                        value:
+                                            _expectedPositions[currentSwitchId] ??
+                                            (switchData
+                                                    .switchPositions[currentSwitchId] ==
+                                                1),
+                                        onChanged: (bool value) {
+                                          _handleSwitchControl(
+                                            currentSwitchId,
+                                            value
+                                                ? switch_model
+                                                      .SwitchPosition
+                                                      .DIVERGING
+                                                : switch_model
+                                                      .SwitchPosition
+                                                      .STRAIGHT,
+                                          );
+                                        },
                                       ),
                                     ),
                                     if (loadingSwitch == currentSwitchId)
@@ -328,10 +399,7 @@ class _SwitchControlWidgetState extends State<SwitchControlWidget> {
                 Text(
                   'Last update: ${switchData.lastUpdateSecondsAgo.toStringAsFixed(1)} seconds ago',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
               ],
             ),

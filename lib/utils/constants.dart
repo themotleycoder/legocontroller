@@ -1,7 +1,8 @@
 class LegoConstants {
   // Service UUIDs (lowercase to match BLE standard)
   static const String legoHubService = "00001623-1212-efde-1623-785feabcd123";
-  static const String characteristicUuid = "00001624-1212-efde-1623-785feabcd123";
+  static const String characteristicUuid =
+      "00001624-1212-efde-1623-785feabcd123";
 
   // Port definitions
   static const int portA = 0x00;

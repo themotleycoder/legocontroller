@@ -1,5 +1,1 @@
-enum TrainCommand {
-  stop,
-  forward,
-  backward
-}
+enum TrainCommand { stop, forward, backward }

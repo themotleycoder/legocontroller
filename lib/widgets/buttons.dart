@@ -6,7 +6,8 @@ class SpeedButton extends StatelessWidget {
   final Color color;
   final bool small;
 
-  const SpeedButton({super.key,
+  const SpeedButton({
+    super.key,
     required this.icon,
     required this.onPressed,
     required this.color,
@@ -27,11 +28,7 @@ class SpeedButton extends StatelessWidget {
           padding: EdgeInsets.zero,
           minimumSize: Size(small ? 32 : 40, small ? 32 : 40),
         ),
-        child: Icon(
-          icon,
-          size: small ? 18 : 24,
-          color: Colors.white,
-        ),
+        child: Icon(icon, size: small ? 18 : 24, color: Colors.white),
       ),
     );
   }
@@ -43,7 +40,8 @@ class ControlButton extends StatelessWidget {
   final Color color;
   final bool small;
 
-  const ControlButton({super.key,
+  const ControlButton({
+    super.key,
     required this.icon,
     required this.onPressed,
     required this.color,
@@ -64,11 +62,7 @@ class ControlButton extends StatelessWidget {
           padding: EdgeInsets.zero,
           minimumSize: Size(small ? 32 : 40, small ? 32 : 40),
         ),
-        child: Icon(
-          icon,
-          size: small ? 18 : 24,
-          color: Colors.white,
-        ),
+        child: Icon(icon, size: small ? 18 : 24, color: Colors.white),
       ),
     );
   }

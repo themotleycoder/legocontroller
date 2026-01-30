@@ -7,59 +7,93 @@ class AppStyle {
   AppStyle._();
 
   /// Primary Colors
-  static const Color primaryColor = Color(0xFF006CB7);      // Blue
-  static const Color primaryLight = Color(0xFF64B5F6);      // Light Blue
-  static const Color primaryDark = Color(0xFF006CB7);       // Dark Blue
+  static const Color primaryColor = Color(0xFF006CB7); // Blue
+  static const Color primaryLight = Color(0xFF64B5F6); // Light Blue
+  static const Color primaryDark = Color(0xFF006CB7); // Dark Blue
 
   /// Secondary Colors
-  static const Color secondaryColor = Color(0xFFFECD04);    // Green for success/connected states
-  static const Color secondaryLight = Color(0xFFFFF579);    // Light Green
-  static const Color secondaryDark = Color(0xFFFBAB18);     // Dark Green
+  static const Color secondaryColor = Color(
+    0xFFFECD04,
+  ); // Green for success/connected states
+  static const Color secondaryLight = Color(0xFFFFF579); // Light Green
+  static const Color secondaryDark = Color(0xFFFBAB18); // Dark Green
 
   /// Accent Colors
-  static const Color accentColor = Color(0xFF00B04E);       // Amber for warnings/connecting states
-  static const Color errorColor = Color(0xFFDD1A22);        // Red for errors/disconnected states
-  static const Color infoColor = Color(0xFF006CB7);         // Blue for information
+  static const Color accentColor = Color(
+    0xFF00B04E,
+  ); // Amber for warnings/connecting states
+  static const Color errorColor = Color(
+    0xFFDD1A22,
+  ); // Red for errors/disconnected states
+  static const Color infoColor = Color(0xFF006CB7); // Blue for information
 
   /// Neutral Colors
-  static const Color background = Color(0xFFFFFFFF);        // White background
-  static const Color surface = Color(0xFFF5F5F5);           // Light Gray surface
-  static const Color divider = Color(0xFFE0E0E0);           // Gray divider
+  static const Color background = Color(0xFFFFFFFF); // White background
+  static const Color surface = Color(0xFFF5F5F5); // Light Gray surface
+  static const Color divider = Color(0xFFE0E0E0); // Gray divider
 
   /// Text Colors
-  static const Color textPrimary = Color(0xFF212121);       // Dark Gray for primary text
-  static const Color textSecondary = Color(0xFF757575);     // Medium Gray for secondary text
-  static const Color textDisabled = Color(0xFFBDBDBD);      // Light Gray for disabled text
+  static const Color textPrimary = Color(
+    0xFF212121,
+  ); // Dark Gray for primary text
+  static const Color textSecondary = Color(
+    0xFF757575,
+  ); // Medium Gray for secondary text
+  static const Color textDisabled = Color(
+    0xFFBDBDBD,
+  ); // Light Gray for disabled text
 
   /// Lego Colors
-  static const Color legoGreen = Color(0xFF00B04E);         // Lego Green
-  static const Color legoRed = Color(0xFFDD1A22);           // Lego Red
-  static const Color legoYellow = Color(0xFFFECD04);        // Lego Amber
-  static const Color legoBlue = Color(0xFF006CB7);          // Lego Blue
+  static const Color legoGreen = Color(0xFF00B04E); // Lego Green
+  static const Color legoRed = Color(0xFFDD1A22); // Lego Red
+  static const Color legoYellow = Color(0xFFFECD04); // Lego Amber
+  static const Color legoBlue = Color(0xFF006CB7); // Lego Blue
 
   /// Connection Status Colors
-  static const Color connected = Color(0xFF00B04E);         // Lego Green
-  static const Color disconnected = Color(0xFFDD1A22);      // Lego Red
-  static const Color connecting = Color(0xFFFECD04);        // Lego Amber
-  static const Color scanning = Color(0xFF006CB7);          // Lego Blue
+  static const Color connected = Color(0xFF00B04E); // Lego Green
+  static const Color disconnected = Color(0xFFDD1A22); // Lego Red
+  static const Color connecting = Color(0xFFFECD04); // Lego Amber
+  static const Color scanning = Color(0xFF006CB7); // Lego Blue
 
   /// Custom Colors
   // Train Colors
-  static const Color trainActive = Color(0xFF00B04E);       // Bright Green for active train
-  static const Color trainInactive = Color(0xFF757575);     // Gray for inactive train
-  static const Color trainError = Color(0xFFDD1A22);        // Deep Red for train errors
-  static const Color trainWarning = Color(0xFFFECD04);      // Bright Yellow for warnings
-  
+  static const Color trainActive = Color(
+    0xFF00B04E,
+  ); // Bright Green for active train
+  static const Color trainInactive = Color(
+    0xFF757575,
+  ); // Gray for inactive train
+  static const Color trainError = Color(
+    0xFFDD1A22,
+  ); // Deep Red for train errors
+  static const Color trainWarning = Color(
+    0xFFFECD04,
+  ); // Bright Yellow for warnings
+
   // Switch Colors
-  static const Color switchOn = Color(0xFF00B04E);          // Light Green for switch on state
-  static const Color switchOff = Color(0xFF616161);         // Dark Gray for switch off state
-  static const Color switchTransition = Color(0xFF29B6F6);  // Light Blue for transition state
-  
+  static const Color switchOn = Color(
+    0xFF00B04E,
+  ); // Light Green for switch on state
+  static const Color switchOff = Color(
+    0xFF616161,
+  ); // Dark Gray for switch off state
+  static const Color switchTransition = Color(
+    0xFF29B6F6,
+  ); // Light Blue for transition state
+
   // Control Panel Colors
-  static const Color controlBackground = Color(0xFFF5F5F5); // Light Gray background
-  static const Color controlBorder = Color(0xFFE0E0E0);     // Border color for controls
-  static const Color controlHighlight = Color(0xFF42A5F5);  // Highlight color for active controls
-  static const Color controlDisabled = Color(0xFFBDBDBD);   // Color for disabled controls
+  static const Color controlBackground = Color(
+    0xFFF5F5F5,
+  ); // Light Gray background
+  static const Color controlBorder = Color(
+    0xFFE0E0E0,
+  ); // Border color for controls
+  static const Color controlHighlight = Color(
+    0xFF42A5F5,
+  ); // Highlight color for active controls
+  static const Color controlDisabled = Color(
+    0xFFBDBDBD,
+  ); // Color for disabled controls
 
   /// Spacing Constants
   static const double spacing_xs = 4.0;
@@ -140,9 +174,7 @@ class AppStyle {
     appBarTheme: AppBarTheme(
       backgroundColor: primaryColor,
       elevation: 0,
-      titleTextStyle: headingStyle.copyWith(
-        color: Colors.white,
-      ),
+      titleTextStyle: headingStyle.copyWith(color: Colors.white),
     ),
     cardTheme: CardThemeData(
       elevation: 2,

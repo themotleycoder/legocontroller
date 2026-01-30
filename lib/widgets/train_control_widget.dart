@@ -9,10 +9,7 @@ class TrainControlWidget extends StatelessWidget {
   final String trainId;
   late final Train train;
 
-  TrainControlWidget({
-    super.key,
-    required this.trainId,
-  });
+  TrainControlWidget({super.key, required this.trainId});
 
   void _updateSpeed(BuildContext context, int speed) {
     context.read<TrainStateProvider>().controlTrain(
@@ -163,7 +160,8 @@ class TrainControlWidget extends StatelessWidget {
                           max: 100,
                           divisions: 10,
                           label: '$power%',
-                          onChanged: (value) => _updateSpeed(context, value.toInt()),
+                          onChanged: (value) =>
+                              _updateSpeed(context, value.toInt()),
                         ),
                       ),
                     ),
@@ -184,21 +182,29 @@ class TrainControlWidget extends StatelessWidget {
                     Expanded(
                       child: ControlButton(
                         icon: Icons.keyboard_double_arrow_left,
-                        onPressed: () => _updateSpeed(context, power>=-80?power-20:-100),
+                        onPressed: () => _updateSpeed(
+                          context,
+                          power >= -80 ? power - 20 : -100,
+                        ),
                         color: Colors.yellow,
                       ),
                     ),
                     const SizedBox(width: 8),
                     ControlButton(
                       icon: Icons.stop,
-                      onPressed: isMoving ? () => _updateSpeed(context, 0) : null,
+                      onPressed: isMoving
+                          ? () => _updateSpeed(context, 0)
+                          : null,
                       color: power != 0 ? Colors.red : Colors.grey.shade300,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: ControlButton(
                         icon: Icons.keyboard_double_arrow_right,
-                        onPressed: () => _updateSpeed(context, power<=80?power+20:100),
+                        onPressed: () => _updateSpeed(
+                          context,
+                          power <= 80 ? power + 20 : 100,
+                        ),
                         color: Colors.yellow,
                       ),
                     ),
@@ -211,9 +217,7 @@ class TrainControlWidget extends StatelessWidget {
                   onPressed: () => _disconnect(context),
                   icon: const Icon(Icons.bluetooth_disabled),
                   label: const Text('Disconnect'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.red,
-                  ),
+                  style: TextButton.styleFrom(foregroundColor: Colors.red),
                 ),
               ],
             ),

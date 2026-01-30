@@ -31,10 +31,11 @@ class TrainWebService {
   Duration _requestTimeout;
 
   TrainWebService._internal()
-      : baseUrl = dotenv.env['BACKEND_URL'] ?? 'http://192.168.86.39:8000',
-        _requestTimeout = Duration(
-          seconds: int.tryParse(dotenv.env['REQUEST_TIMEOUT_SECONDS'] ?? '5') ?? 5,
-        );
+    : baseUrl = dotenv.env['BACKEND_URL'] ?? 'http://192.168.86.39:8000',
+      _requestTimeout = Duration(
+        seconds:
+            int.tryParse(dotenv.env['REQUEST_TIMEOUT_SECONDS'] ?? '5') ?? 5,
+      );
 
   // Allow custom base URL for different environments
   void configure({String? customBaseUrl}) {
@@ -45,7 +46,7 @@ class TrainWebService {
 
   Future<void> selfDriveTrain({
     required int hubId,
-    required bool selfDrive
+    required bool selfDrive,
   }) async {
     final url = Uri.parse('$baseUrl/selfdrive');
 
@@ -55,88 +56,86 @@ class TrainWebService {
     }
 
     try {
-      final payload = {
-        'hub_id': hubId,
-        'self_drive': selfDriveVal
-      };
+      final payload = {'hub_id': hubId, 'self_drive': selfDriveVal};
 
-      final response = await http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(payload)
-      ).timeout(_requestTimeout);
+      final response = await http
+          .post(
+            url,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(payload),
+          )
+          .timeout(_requestTimeout);
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
-            'Failed to switch self drive on train: ${response.body}'
+          'Failed to switch self drive on train: ${response.body}',
         );
       }
     } catch (e) {
       throw TrainWebServiceException(
-          'Network error while controlling train: $e'
+        'Network error while controlling train: $e',
       );
     }
   }
 
-  Future<void> controlTrain({
-    required int hubId,
-    required int power
-  }) async {
+  Future<void> controlTrain({required int hubId, required int power}) async {
     final url = Uri.parse('$baseUrl/train');
 
     try {
-      final payload = {
-        'hub_id': hubId,
-        'power': power
-      };
-      
-      final response = await http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(payload)
-      ).timeout(_requestTimeout);
-      
+      final payload = {'hub_id': hubId, 'power': power};
+
+      final response = await http
+          .post(
+            url,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(payload),
+          )
+          .timeout(_requestTimeout);
+
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
-            'Failed to control train: ${response.body}'
+          'Failed to control train: ${response.body}',
         );
       }
     } catch (e) {
       throw TrainWebServiceException(
-          'Network error while controlling train: $e'
+        'Network error while controlling train: $e',
       );
     }
   }
 
   Future<void> controlSwitch({
     required int hubId,
-    required String switchId,  // "SWITCH_A", "SWITCH_B", etc.
+    required String switchId, // "SWITCH_A", "SWITCH_B", etc.
     required SwitchPosition position,
   }) async {
     final url = Uri.parse('$baseUrl/switch');
 
     final positionStr = position.toString().split('.').last;
-    final switchName = switchId.substring(switchId.lastIndexOf("_")+1,switchId.length);
+    final switchName = switchId.substring(
+      switchId.lastIndexOf("_") + 1,
+      switchId.length,
+    );
 
     try {
       final response = await http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'hub_id': hubId,
-            'switch': switchName,
-            'position': positionStr
-          })
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'hub_id': hubId,
+          'switch': switchName,
+          'position': positionStr,
+        }),
       );
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
-            'Failed to control switch: ${response.body}'
+          'Failed to control switch: ${response.body}',
         );
       }
     } catch (e) {
       throw TrainWebServiceException(
-          'Network error while controlling switch: $e'
+        'Network error while controlling switch: $e',
       );
     }
   }
@@ -149,12 +148,12 @@ class TrainWebService {
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
-            'Failed to reset bluetooth: ${response.body}'
+          'Failed to reset bluetooth: ${response.body}',
         );
       }
     } catch (e) {
       throw TrainWebServiceException(
-          'Network error while resetting bluetooth: $e'
+        'Network error while resetting bluetooth: $e',
       );
     }
   }
@@ -167,7 +166,7 @@ class TrainWebService {
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
-            'Failed to get connected trains: ${response.body}'
+          'Failed to get connected trains: ${response.body}',
         );
       }
 
@@ -196,7 +195,7 @@ class TrainWebService {
       return TrainStatus.fromJson(data);
     } catch (e) {
       throw TrainWebServiceException(
-          'Network error while getting connected trains: $e'
+        'Network error while getting connected trains: $e',
       );
     }
   }
@@ -209,7 +208,7 @@ class TrainWebService {
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
-            'Failed to get connected switches: ${response.body}'
+          'Failed to get connected switches: ${response.body}',
         );
       }
 
@@ -237,7 +236,7 @@ class TrainWebService {
       return data['connected_switches'] as int;
     } catch (e) {
       throw TrainWebServiceException(
-          'Network error while getting connected switches: $e'
+        'Network error while getting connected switches: $e',
       );
     }
   }
@@ -258,7 +257,7 @@ class TrainWebService {
 
       if (response.statusCode != 200) {
         throw TrainWebServiceException(
-            'Failed to get switch status: ${response.body}'
+          'Failed to get switch status: ${response.body}',
         );
       }
 
@@ -285,7 +284,7 @@ class TrainWebService {
       return SwitchStatus.fromJson(data);
     } catch (e) {
       throw TrainWebServiceException(
-          'Network error while getting switch status: $e'
+        'Network error while getting switch status: $e',
       );
     }
   }
